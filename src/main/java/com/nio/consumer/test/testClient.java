@@ -26,6 +26,7 @@ public class testClient {
 		//System.out.println("result:"+result);
 		
 		
+		
 		User createUser = service.createUser("zhangrp", "12");
 		System.out.println("返回的user:"+createUser);
 		

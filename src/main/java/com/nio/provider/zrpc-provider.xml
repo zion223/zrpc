@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:zrpc="http://www.lexueba.com/schema/service" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/jee
+	http://www.springframework.org/schema/jee/spring-jee-4.1.xsd
+	http://www.springframework.org/schema/util 
+	http://www.springframework.org/schema/util/spring-util-4.1.xsd
+	http://www.lexueba.com/schema/service
+ 	http://www.lexueba.com/schema/service.xsd">
+
+	
+	<!-- 
+		<dubbo:application name="dubbodemo-provider"/> 
+		<dubbo:registry id="dubbodemo" address="zookeeper://localhost:2181"/> 
+		<dubbo:protocol name="dubbo" port="28080"/> 
+		<dubbo:service registry="dubbodemo" timeout="3000" interface="com.chanshuyi.service.IUserService" ref="userService"/> 
+		实例化实现了接口的服务，维护一个map private String interfaceName; 接口名称 
+		private String methodName; 方法名称 private Object[] parameterTypes; 方法的参数类型 
+		private Object[] arguments; 方法参数 -->
+
+	<!-- 暴露服务接口 -->
+	
+	<zrpc:service id="hello" interfaceName="com.nio.service.HelloService" ref="helloService" interfaceImplName="com.nio.provider.service.impl.HelloServiceImpl"/>
+
+</beans>

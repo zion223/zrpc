@@ -84,16 +84,7 @@ public class OkHttp3ClientManager {
 		return strParams;
 	}
 
-	// public <T> T getBeanExecute(String url,Map<String, Object> map,final
-	// Class<T> rspClass) throws IOException{
-	// String UrlParams = setUrlParams(map);
-	// String URL = url + "?" + UrlParams;
-	// Request request = new Request.Builder().url(URL).build();
-	// Response response = mOkHttpClient.newCall(request).execute();
-	// String responseString =response.body().string();
-	//
-	// return responseString;
-	// }
+
 	public <T>  T getBeanExecute(String url, Map<String, Object> map,
 			final Class<T> rspClass) throws IOException {
 		String UrlParams = setUrlParams(map);
@@ -103,5 +94,14 @@ public class OkHttp3ClientManager {
 		String responseString = response.body().string();
 		Object parseObject = JSONObject.parseObject(responseString, rspClass);
 		return (T)parseObject;
+	}
+	
+	public String getStringExecute(String url,Map<String, Object> map) throws IOException{
+		
+		String UrlParams = setUrlParams(map);
+		String URL = url + "?" + UrlParams;
+		Request request = new Request.Builder().url(URL).build();
+		Response response = mOkHttpClient.newCall(request).execute();
+		return response.body().string();
 	}
 }

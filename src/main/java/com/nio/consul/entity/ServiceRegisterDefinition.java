@@ -18,6 +18,15 @@ public class ServiceRegisterDefinition {
 	public String getName() {
 		return name;
 	}
+	public ServiceRegisterDefinition(String id, String name, List<String> tag,
+			String adress, int port) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.tag = tag;
+		this.adress = adress;
+		this.port = port;
+	}
 	public void setName(String name) {
 		this.name = name;
 	}

@@ -8,6 +8,21 @@ public class ServiceRequest {
 	private int port;
 	private List<String> tag;
 	private String serviceName;
+	
+	private String fallbackType;
+	private String fallbackMethod;
+	public String getFallbackType() {
+		return fallbackType;
+	}
+	public void setFallbackType(String fallbackType) {
+		this.fallbackType = fallbackType;
+	}
+	public String getFallbackMethod() {
+		return fallbackMethod;
+	}
+	public void setFallbackMethod(String fallbackMethod) {
+		this.fallbackMethod = fallbackMethod;
+	}
 	public ServiceRequest(String address, int port, List<String> tag,
 			String serviceName) {
 		super();

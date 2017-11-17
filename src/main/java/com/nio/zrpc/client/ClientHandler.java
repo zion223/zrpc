@@ -5,8 +5,6 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 
-import com.alibaba.fastjson.JSONObject;
-import com.nio.entity.User;
 
 public class ClientHandler extends SimpleChannelHandler {
 

@@ -1,6 +1,7 @@
 package com.nio.consul;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +18,7 @@ import com.nio.consul.strategy.HashStrategy;
 import com.nio.consul.strategy.LoadBalanceStrategy;
 import com.nio.consul.strategy.RandomStrategy;
 import com.nio.entity.User;
+import com.nio.zrpc.hystrix.anno.Command;
 import com.orbitz.consul.AgentClient;
 import com.orbitz.consul.Consul;
 import com.orbitz.consul.HealthClient;
@@ -35,7 +37,7 @@ import com.orbitz.consul.model.health.ServiceHealth;
 public class ConsulUtil {
 	//https://github.com/OrbitzWorldwide/consul-client
 	static Consul consul=Consul.builder().withHostAndPort(HostAndPort.fromString("127.0.0.1:8500")).build();
-	
+
 	public static void serviceRegister(ServiceRegisterDefinition definition){
 		AgentClient agent = consul.agentClient();
 
@@ -93,8 +95,8 @@ public class ConsulUtil {
 		 tagList.add("v2");
 		 //更改ID可同时注册多个服务
 		 ServiceRegisterDefinition definition = new ServiceRegisterDefinition("helloService1", "helloService",tagList, "127.0.0.1", 8081);
-		
-        serviceRegister(definition);  
+		 
+         serviceRegister(definition);  
 		
 		
         
@@ -110,23 +112,39 @@ public class ConsulUtil {
 		System.out.println("foo:"+value);
 		
 	}
-	@Test
+	//@Test
+	@Command(fallbackType="com.nio.consul.ConsulUtil")
 	public void testGet() throws IOException{
 		//根据服务名 找到在注册中心注册的实例  负载均衡
-        ServiceRequest serviceGet = serviceGet("helloService",new HashStrategy());
+        //ServiceRequest serviceGet = serviceGet("helloService",new HashStrategy());
         
+        //serviceGet.setFallbackType(Command.cla);
         //构造服务请求对象 通过OkHttp发送请求
-        OkHttp3ClientManager manger = OkHttp3ClientManager.getInstance();
+        //OkHttp3ClientManager manger = OkHttp3ClientManager.getInstance();
         Map<String,Object> hashMap = new HashMap<String, Object>();
         hashMap.put("name", "zhang");
         hashMap.put("age", "21");
-        User response =manger.getBeanExecute("http:"+serviceGet.getAddress()+":"+serviceGet.getPort()+"/createUser", hashMap, User.class);
-       	System.out.println(response.getAge());
+//        User response =manger.getBeanExecute("http:"+serviceGet.getAddress()+":"+serviceGet.getPort()+"/createUser", hashMap, User.class);
+//       	System.out.println(response.getAge());
+	}
+	
+	@Test
+	public void testAnno() throws NoSuchMethodException, SecurityException, ClassNotFoundException{
+		
+		Method method = Class.forName("com.nio.consul.ConsulUtil").getDeclaredMethod("testGet");
+		Command command = method.getAnnotation(Command.class);
+		System.out.println(command.fallbackMethod());
+		System.out.println(command.fallbackType());
+		
+	}
+	public String fall(){
+		System.out.println("==================FallBack");
+		return "error";
 	}
 	
 	/**
-	 * @deprecated 暂时不可用
 	 * @throws Exception
+	 * @deprecated 暂时不可用
 	 */
 	@Test
 	public void testSubscribe() throws Exception{

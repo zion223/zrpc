@@ -1,4 +1,4 @@
-package com.nio.zrpc;
+package com.nio.zrpc.util;
 
 public class StringUtil {
 	public static String toLowerCaseFirstOne(String s) {

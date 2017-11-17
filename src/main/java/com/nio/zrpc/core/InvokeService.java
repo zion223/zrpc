@@ -10,9 +10,8 @@ import com.nio.consul.ConsulUtil;
 import com.nio.consul.OkHttp3ClientManager;
 import com.nio.consul.request.ServiceRequest;
 import com.nio.consul.strategy.HashStrategy;
-import com.nio.entity.User;
-import com.nio.zrpc.StringUtil;
 import com.nio.zrpc.definition.RpcDefinition;
+import com.nio.zrpc.util.StringUtil;
 
 public class InvokeService {
 	// 维护一个服务实例Map

@@ -1,18 +1,15 @@
 package com.nio.zrpc.server;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.nio.zrpc.client.Client;
 import com.nio.zrpc.core.InvokeService;
 import com.nio.zrpc.definition.RpcDefinition;
+import com.nio.zrpc.hystrix.RpcHystrixCommand;
 
 public class ServerHandler extends SimpleChannelHandler{
 
@@ -58,9 +55,10 @@ public class ServerHandler extends SimpleChannelHandler{
 		
 		RpcDefinition rpc = JSONObject.parseObject(buffer,RpcDefinition.class);
 		
-		
-		Object result1 = InvokeService.invokeService(rpc);
-		
+		//调用service  使用hystrix进行调用
+		//Object result1 = InvokeService.invokeService(rpc);
+		RpcHystrixCommand rpcHystrixCommand = new RpcHystrixCommand(rpc);
+		Object result1 = rpcHystrixCommand.execute();
 		if(result1.getClass()==String.class){
 			
 			context.getChannel().write(result1);

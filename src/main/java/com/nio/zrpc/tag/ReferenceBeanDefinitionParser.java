@@ -5,9 +5,9 @@ import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Element;
 
-import com.nio.zrpc.core.InvokeService;
 import com.nio.zrpc.tag.definition.ReferenceDefinition;
-import com.nio.zrpc.tag.definition.ServiceDefinition;
+
+
 
 public class ReferenceBeanDefinitionParser extends
 		AbstractSingleBeanDefinitionParser {

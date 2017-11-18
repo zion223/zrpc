@@ -75,7 +75,7 @@ public class ConsulUtil {
         server=strategy.getInstance(hashMap);
         //负载均衡算法  参数hashMap  返回值 String
        
-        System.out.println(server);
+        System.out.println("server address:"+server);
         //获取所有服务个数 
         System.out.println(client.getAllServiceInstances(name).getResponse().size());  
           
@@ -94,7 +94,7 @@ public class ConsulUtil {
 		 ArrayList<String> tagList = new ArrayList<String>();
 		 tagList.add("v2");
 		 //更改ID可同时注册多个服务
-		 ServiceRegisterDefinition definition = new ServiceRegisterDefinition("helloService1", "helloService",tagList, "127.0.0.1", 8081);
+		 ServiceRegisterDefinition definition = new ServiceRegisterDefinition("helloService1", "helloService",tagList, "127.0.0.1", 8082);
 		 
          serviceRegister(definition);  
 		
@@ -112,20 +112,20 @@ public class ConsulUtil {
 		System.out.println("foo:"+value);
 		
 	}
-	//@Test
-	@Command(fallbackType="com.nio.consul.ConsulUtil")
+	@Test
+	//@Command(fallbackType="com.nio.consul.ConsulUtil")
 	public void testGet() throws IOException{
 		//根据服务名 找到在注册中心注册的实例  负载均衡
-        //ServiceRequest serviceGet = serviceGet("helloService",new HashStrategy());
+        ServiceRequest serviceGet = serviceGet("helloService",new HashStrategy());
         
         //serviceGet.setFallbackType(Command.cla);
         //构造服务请求对象 通过OkHttp发送请求
-        //OkHttp3ClientManager manger = OkHttp3ClientManager.getInstance();
+        OkHttp3ClientManager manger = OkHttp3ClientManager.getInstance();
         Map<String,Object> hashMap = new HashMap<String, Object>();
         hashMap.put("name", "zhang");
         hashMap.put("age", "21");
-//        User response =manger.getBeanExecute("http:"+serviceGet.getAddress()+":"+serviceGet.getPort()+"/createUser", hashMap, User.class);
-//       	System.out.println(response.getAge());
+        User response =manger.getBeanExecute("http:"+serviceGet.getAddress()+":"+serviceGet.getPort()+"/createUser", hashMap, User.class);
+       	System.out.println(response.getAge());
 	}
 	
 	@Test

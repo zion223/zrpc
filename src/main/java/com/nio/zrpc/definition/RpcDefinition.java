@@ -2,6 +2,8 @@ package com.nio.zrpc.definition;
 
 import java.util.Arrays;
 
+import com.nio.zrpc.hystrix.FallBackDefinition;
+
 public class RpcDefinition {
 
 	private String interfaceName;
@@ -9,43 +11,23 @@ public class RpcDefinition {
 	private String methodName;
 	private Object[] parameterTypes;
 	private Object[] arguments;
-	
-	public String getInterfaceName() {
-		
-		return interfaceName;
-	}
-
-	public RpcDefinition() {
-		super();
-	}
-
-
-
-
-
-	public void setInterfaceName(String interfaceName) {
-		this.interfaceName = interfaceName;
-	}
-
-
-
-	public String getMethodName() {
-		return methodName;
-	}
-
-	public void setMethodName(String methodName) {
-		this.methodName = methodName;
-	}
-
-
-
+	private FallBackDefinition def;
 	public RpcDefinition(String interfaceName, String methodName,
-			Object[] parameterTypes, Object[] arguments) {
+			Object[] parameterTypes, Object[] arguments,FallBackDefinition def) {
 		super();
 		this.interfaceName = interfaceName;
 		this.methodName = methodName;
 		this.parameterTypes = parameterTypes;
 		this.arguments = arguments;
+		this.def=def;
+	}
+
+	public FallBackDefinition getDef() {
+		return def;
+	}
+
+	public void setDef(FallBackDefinition def) {
+		this.def = def;
 	}
 
 	public Object[] getParameterTypes() {
@@ -62,6 +44,26 @@ public class RpcDefinition {
 
 	public void setArguments(Object[] arguments) {
 		this.arguments = arguments;
+	}
+	public String getInterfaceName() {
+
+		return interfaceName;
+	}
+
+	public RpcDefinition() {
+		super();
+	}
+
+	public void setInterfaceName(String interfaceName) {
+		this.interfaceName = interfaceName;
+	}
+
+	public String getMethodName() {
+		return methodName;
+	}
+
+	public void setMethodName(String methodName) {
+		this.methodName = methodName;
 	}
 
 }

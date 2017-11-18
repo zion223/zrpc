@@ -30,6 +30,7 @@ public class InvokeService {
 		String serviceName = StringUtil.toLowerCaseFirstOne(definition.getInterfaceName()
 				.substring(definition.getInterfaceName().lastIndexOf(".") + 1));
 		System.out.println("调用的服务:"+serviceName);
+		//负载均衡策略
 		ServiceRequest request = ConsulUtil.serviceGet(serviceName,
 				new HashStrategy());
 
@@ -41,7 +42,7 @@ public class InvokeService {
 		for(int i=0;i<argLength;i++){
 			hashMap.put("param"+i, definition.getArguments()[i]);
 		}
-
+		
 		// User response
 		// =manger.getBeanExecute("http:"+request.getAddress()+":"+request.getPort()+"/"+definition.getMethodName(),
 		// hashMap, User.class);
@@ -50,7 +51,7 @@ public class InvokeService {
 		String responseString = manger.getStringExecute(
 				"http:" + request.getAddress() + ":" + request.getPort() + "/"
 						+ definition.getMethodName(), hashMap);
-
+		
 		System.out.println(responseString);
 
 		// Class<?> serviceinterfaceclass = Class.forName(definition

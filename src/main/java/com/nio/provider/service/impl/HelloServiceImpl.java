@@ -12,7 +12,7 @@ public class HelloServiceImpl implements HelloService{
 		return "Hi"+param;
 	}
 
-	public User createUser(String name, String age) {
+	public User createUser(String name, Integer age) {
 		
 		return new User(name,age);
 	}

@@ -13,7 +13,7 @@ public class ClientHandler extends SimpleChannelHandler {
 			throws Exception {
 		String s = (String) e.getMessage();
 		
-		//System.out.println("服务调用成功，返回的结果是:"+s);
+		System.out.println("服务调用成功，返回的结果是:"+s);
 		
 //		User parseObject = JSONObject.parseObject(s, User.class);
 		getResultThread.result=s;

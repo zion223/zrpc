@@ -59,6 +59,7 @@ public class ServerHandler extends SimpleChannelHandler{
 		//Object result1 = InvokeService.invokeService(rpc);
 		RpcHystrixCommand rpcHystrixCommand = new RpcHystrixCommand(rpc);
 		Object result1 = rpcHystrixCommand.execute();
+		System.out.println(result1);
 		if(result1.getClass()==String.class){
 			
 			context.getChannel().write(result1);

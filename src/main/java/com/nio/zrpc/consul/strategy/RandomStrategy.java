@@ -1,4 +1,4 @@
-package com.nio.consul.strategy;
+package com.nio.zrpc.consul.strategy;
 
 import java.util.ArrayList;
 import java.util.Map;

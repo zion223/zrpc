@@ -107,13 +107,13 @@ public class testClient {
 		Client.ZrpcClient(new InetSocketAddress("127.0.0.1",8000));
 		HelloService service = Client.refer(HelloService.class);
 		//String result = service.sayHello("Zrp");
-		//System.out.println("result:"+result);
+		//log.info("result:"+result);
 		
 //		User createUser = service.createUser("zhangrp", "12");
-//		System.out.println("返回的user:"+createUser);
+//		log.info("返回的user:"+createUser);
 		
 		//String resultHi = service.sayHi("ZRP");
-		//System.out.println(createUser);
+		//log.info(createUser);
 		
 	}
 	

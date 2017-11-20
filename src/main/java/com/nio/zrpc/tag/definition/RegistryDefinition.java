@@ -1,0 +1,29 @@
+package com.nio.zrpc.tag.definition;
+
+public class RegistryDefinition {
+
+	
+
+	private String address;
+	private String id;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	
+
+
+}

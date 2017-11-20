@@ -1,2 +1,1 @@
-http\://www.lexueba.com/schema/service.xsd=META-INF/zrpc-service.xsd  
-http\://www.lexueba.com/schema/reference.xsd=META-INF/zrpc-reference.xsd  
+ http\://www.lexueba.com/schema/zrpc.xsd=META-INF/zschema.xsd

@@ -5,8 +5,16 @@ public class ReferenceDefinition {
 	private String id;
 
 	private String interfaceName;
+	
+	private String strategy;
 
 	
+	public String getStrategy() {
+		return strategy;
+	}
+	public void setStrategy(String strategy) {
+		this.strategy = strategy;
+	}
 	public String getInterfaceName() {
 		return interfaceName;
 	}

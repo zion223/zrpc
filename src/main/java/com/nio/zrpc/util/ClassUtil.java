@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.nio.zrpc.client.TestResourceLoader;
 
 public class ClassUtil {
 	private static List<String> classPaths = new ArrayList<String>();
@@ -15,7 +14,8 @@ public class ClassUtil {
 		// 包名
 
 		// 先把包名转换为路径,首先得到项目的classpath
-		String classpath = TestResourceLoader.class.getResource("/").getPath();
+
+		String classpath = ClassUtil.class.getResource("/").getPath();
 		// 然后把我们的包名basPach转换为路径名
 		basePack = basePack.replace(".", File.separator);
 		// 然后把classpath和basePack合并

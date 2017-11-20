@@ -1,6 +1,8 @@
 package com.nio.zrpc.server;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -11,11 +13,21 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.handler.codec.string.StringDecoder;
 import org.jboss.netty.handler.codec.string.StringEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class Server {
+import com.nio.zrpc.consul.ConsulUtil;
+import com.nio.zrpc.consul.entity.ServiceRegisterDefinition;
+import com.nio.zrpc.consul.request.ServiceRequest;
+import com.nio.zrpc.tag.definition.RegistryDefinition;
 
+public class Server {
+	private static final Logger log = LoggerFactory.getLogger(Server.class);
+
+	private static volatile String registryAddress;
+	public static List<ServiceRegisterDefinition> serviceList=new ArrayList<ServiceRegisterDefinition>();
 	public static void ZrpcServer(InetSocketAddress add,String path) {
 		ServerBootstrap serverBootstrap = new ServerBootstrap();
 		
@@ -38,12 +50,27 @@ public class Server {
 			}
 		});
 		serverBootstrap.bind(add);
-		System.out.println("ZrpcServer started!!!!!!!!!!!");
-		springinit(path);
+		log.info("Server started!!!!!!!!!!!");
+		//获取Spring容器
+		SpringInit(path);
 		
 	}
-	private static void springinit(String path){
+	private static void SpringInit(String path){
 		 ApplicationContext ac = new ClassPathXmlApplicationContext(path);
+		 RegistryDefinition registryDef = (RegistryDefinition) ac.getBean("registry");
 		 
+		  registryAddress = registryDef.getAddress();
+		  ConsulUtil consulUtil = new ConsulUtil(registryAddress);
+		  //注册服务到Consul上
+		  // id name tag address port
+	
+		  for(ServiceRegisterDefinition srd:serviceList){
+			  consulUtil.serviceRegister(srd);
+		  }
+		  //consulUtil.serviceRegister();
+		  
+	}
+	public static String getRegistryAddress(){
+		return registryAddress;
 	}
 }

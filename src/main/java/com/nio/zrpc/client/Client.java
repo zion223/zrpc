@@ -25,18 +25,25 @@ import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.handler.codec.string.StringDecoder;
 import org.jboss.netty.handler.codec.string.StringEncoder;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.nio.consumer.controller.HelloServiceController;
 import com.nio.zrpc.definition.RpcDefinition;
 import com.nio.zrpc.hystrix.FallBackDefinition;
 import com.nio.zrpc.hystrix.anno.Command;
+import com.nio.zrpc.tag.definition.ReferenceDefinition;
 import com.nio.zrpc.util.ClassUtil;
 
 public class Client {
+	private static final Logger log = LoggerFactory.getLogger(Client.class);
 	private List<String>  packageName = new ArrayList<String>();
 	private static HashMap<String, Object> fallbackMap = new HashMap<String, Object>();
-	
+	private static volatile ApplicationContext ac;
 	private static Channel channel;
 	// protected static volatile Object result;
 	
@@ -48,7 +55,7 @@ public class Client {
 		// 判断方法上是否有command注解
 		
 		packageName=ClassUtil.searchClass("com.nio.consumer");
-		System.out.println(packageName);
+		
 		
 		filterAndInstance();
 	}
@@ -90,7 +97,7 @@ public class Client {
 		}
 	}
 
-	public  void ZrpcClient(InetSocketAddress add) {
+	public  void ZrpcClient(InetSocketAddress add,String path ) {
 
 		ClientBootstrap clientBootstrap = new ClientBootstrap();
 		ExecutorService boss = Executors.newCachedThreadPool();
@@ -109,13 +116,34 @@ public class Client {
 		});
 		ChannelFuture connect = clientBootstrap.connect(add);
 		channel = connect.getChannel();
-		System.out.println("client start");
+		log.info("client start");
+		SpringInit(path);
+	}
 
+	private void SpringInit(String path) {
+		if(path.equals("")){
+			throw new NullPointerException("配置文件呢??");
+		}
+		ac = new ClassPathXmlApplicationContext(path);
+		
+	}
+
+	public static Object getBean(String serviceId) throws ClassNotFoundException{
+		
+		ReferenceDefinition rdf = (ReferenceDefinition) ac.getBean(serviceId);
+		if(rdf==null&&rdf.equals("")){
+			throw new NullPointerException("配置文件中没有配置服务名");
+		}
+		rdf.getStrategy();
+		String interfaceName = rdf.getInterfaceName();
+		Class forName =  Class.forName(interfaceName);
+		return refer(forName);
+	
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T refer(final Class<T> interfaceName) {
-		return (T) Proxy.newProxyInstance(Client.class.getClassLoader(),
+	public static Object refer(final Class<?> interfaceName) {
+		return  Proxy.newProxyInstance(Client.class.getClassLoader(),
 				new Class[] { interfaceName }, new InvocationHandler() {
 
 					public Object invoke(Object proxy, Method method,
@@ -123,22 +151,23 @@ public class Client {
 						// 转发请求 交给服务端执行
 						// interface com.nio.service.HelloService
 						//com.nio.service.HelloService
-						String interfaceName1 = interfaceName.toString()
+						String infName = interfaceName.toString()
 								.substring(10);
 						returnType = method.getReturnType();
 						//发送序列化的数据 加入FallBack机制
 						//只加入fallback方法
 						FallBackDefinition fallback=null;
 						for (Entry<String, Object> entry :fallbackMap.entrySet()) {
-							System.out.println(entry.getKey().toString());
-							if(interfaceName1.equals(entry.getKey().toString())){
+							
+							if(infName.equals(entry.getKey().toString())){
 								//需要使用Hystrix
 								 fallback = (FallBackDefinition) entry.getValue();
 							}
 							
 						}
 						
-						RpcDefinition rpc = new RpcDefinition(interfaceName1,
+						
+						RpcDefinition rpc = new RpcDefinition(infName,
 								method.getName(), method.getParameterTypes(),
 								arguments,fallback);
 						String jsonString = JSONObject.toJSONString(rpc);
@@ -148,7 +177,7 @@ public class Client {
 							public void operationComplete(ChannelFuture future)
 									throws Exception {
 								// 消息发送完毕
-								System.out.println("消息发送完毕");
+								log.info("消息发送完毕");
 
 							}
 
@@ -165,6 +194,7 @@ public class Client {
 }
 
 class getResultThread extends Thread {
+	private static final Logger log = LoggerFactory.getLogger(getResultThread.class);
 	protected static volatile Object result;
 
 	protected static Object lock = new Object();
@@ -176,7 +206,7 @@ class getResultThread extends Thread {
 			synchronized (lock) {
 				try {
 					lock.wait();
-					System.out.println("得到result:" + result+result.getClass());
+					log.info("得到result:" + result+result.getClass());
 					
 					if (Client.returnType == String.class) {
 						
@@ -185,14 +215,14 @@ class getResultThread extends Thread {
 						return ;
 					}else{
 						//class com.nio.entity.User
-						System.out.println("返回类型:" + Client.returnType);
+						log.info("返回类型:" + Client.returnType);
 					
 							Object parseObject = JSONObject.parseObject(
 									result.toString(), Client.returnType);
 
-							System.out.println(parseObject);
+							log.info(parseObject.toString());
 							result = parseObject;
-							System.out.println("get Thread:"
+							log.info("get Thread:"
 									+ Thread.currentThread().getName());
 						
 						return;

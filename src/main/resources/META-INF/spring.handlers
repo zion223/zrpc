@@ -1,3 +1,2 @@
-http\://www.lexueba.com/schema/service=com.nio.zrpc.tag.MyNamespaceHandler
-http\://www.lexueba.com/schema/reference=com.nio.zrpc.tag.MyNamespaceHandler
+http\://www.lexueba.com/schema/zrpc=com.nio.zrpc.tag.MyNamespaceHandler
   

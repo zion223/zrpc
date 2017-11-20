@@ -1,9 +1,12 @@
-package com.nio.consul;
+package com.nio.zrpc.consul;
 
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -14,7 +17,8 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class OkHttp3ClientManager {
-	private String TAG = this.getClass().getName();
+	private static final Logger log = LoggerFactory.getLogger(OkHttp3ClientManager.class);
+
 	private static OkHttp3ClientManager mInstance;
 	private OkHttpClient mOkHttpClient;
 
@@ -52,7 +56,7 @@ public class OkHttp3ClientManager {
 		if (null != BodyParams) {
 			for (Map.Entry<String, Object> entry : BodyParams.entrySet()) {
 
-				System.out.println("Key = " + entry.getKey() + ", Value = "
+				log.info("Key = " + entry.getKey() + ", Value = "
 						+ entry.getValue());
 
 				builder.add(entry.getKey(), entry.getValue().toString());

@@ -4,16 +4,19 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class ClientHandler extends SimpleChannelHandler {
+	private static final Logger log = LoggerFactory.getLogger(ClientHandler.class);
 
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
 			throws Exception {
 		String s = (String) e.getMessage();
 		
-		System.out.println("服务调用成功，返回的结果是:"+s);
+		log.info("服务调用成功，返回的结果是:"+s);
 		
 //		User parseObject = JSONObject.parseObject(s, User.class);
 		getResultThread.result=s;
@@ -27,21 +30,21 @@ public class ClientHandler extends SimpleChannelHandler {
 	@Override
 	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e)
 			throws Exception {
-		System.out.println("channelConnected");
+		log.info("channelConnected");
 		super.channelConnected(ctx, e);
 	}
 
 	@Override
 	public void channelDisconnected(ChannelHandlerContext ctx,
 			ChannelStateEvent e) throws Exception {
-		System.out.println("channelDisconnected");
+		log.info("channelDisconnected");
 		super.channelDisconnected(ctx, e);
 	}
 
 	@Override
 	public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e)
 			throws Exception {
-		System.out.println("channelClosed");
+		log.info("channelClosed");
 		super.channelClosed(ctx, e);
 	}
 

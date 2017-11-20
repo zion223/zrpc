@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.omg.CORBA.SystemException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -16,6 +18,7 @@ import com.nio.zrpc.core.InvokeService;
 import com.nio.zrpc.definition.RpcDefinition;
 
 public class RpcHystrixCommand extends HystrixCommand<Object> {
+	private static final Logger log = LoggerFactory.getLogger(RpcHystrixCommand.class);
 
 	private static final int DEFAULT_THREADPOOL_CORE_SIZE = 30;
 	private final RpcDefinition invoker;
@@ -35,8 +38,8 @@ public class RpcHystrixCommand extends HystrixCommand<Object> {
 
 	@Override
 	protected Object run() throws Exception {
-		Object result = null;
-		//Object result= InvokeService.invokeService(invoker);
+		//Object result = null;
+		Object result= InvokeService.invokeService(invoker);
 		if (result == null) {
 			throw new NullPointerException();
 		}
@@ -48,16 +51,16 @@ public class RpcHystrixCommand extends HystrixCommand<Object> {
 	protected String getFallback() {
 		// 本地方法调用
 		//{"name":"zhangrp","age":13}
-		//System.out.println("===========getFallback==============");
+		//log.info("===========getFallback==============");
 		Object result = null;
 		try {
-			System.out.println(invoker.getDef().getFallbackClass());
+			log.info(invoker.getDef().getFallbackClass());
 			Class<?> clazz = Class.forName(invoker.getDef().getFallbackClass());
 			Method method = clazz.getDeclaredMethod(invoker.getDef()
 					.getFallbackMethod());
 			Object obj = clazz.newInstance();
 			result = method.invoke(obj, null);
-			System.out.println("==============fallback========="+result);
+			log.info("==============fallback========="+result);
 			String jsonString = JSON.toJSONString(result);
 			return jsonString;
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {

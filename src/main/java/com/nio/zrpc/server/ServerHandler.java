@@ -5,6 +5,8 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSONObject;
 import com.nio.zrpc.core.InvokeService;
@@ -12,18 +14,19 @@ import com.nio.zrpc.definition.RpcDefinition;
 import com.nio.zrpc.hystrix.RpcHystrixCommand;
 
 public class ServerHandler extends SimpleChannelHandler{
+	private static final Logger log = LoggerFactory.getLogger(ServerHandler.class);
 
 	@Override
 	public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e)
 			throws Exception {
-		System.out.println("channelClosed");
+		log.info("channelClosed");
 		super.channelClosed(ctx, e);
 	}
 
 	@Override
 	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent event)
 			throws Exception {
-		System.out.println("channelConnected"+event.getChannel().getRemoteAddress());
+		log.info("channelConnected"+event.getChannel().getRemoteAddress());
 		//判断连接服务器  过滤
 		//ctx.getChannel().close();
 		super.channelConnected(ctx, event);
@@ -32,14 +35,14 @@ public class ServerHandler extends SimpleChannelHandler{
 	@Override
 	public void channelDisconnected(ChannelHandlerContext ctx,
 			ChannelStateEvent e) throws Exception {
-		System.out.println("channelDisconnected");
+		log.info("channelDisconnected");
 		super.channelDisconnected(ctx, e);
 	}
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
 			throws Exception {
-		System.out.println("exceptionCaught");
+		log.info("exceptionCaught");
 		
 		super.exceptionCaught(ctx, e);
 	}
@@ -50,7 +53,7 @@ public class ServerHandler extends SimpleChannelHandler{
 
 		String buffer = (String) message.getMessage();
 		
-		System.out.println("received message:"+buffer);
+		log.info("received message:"+buffer);
 		
 		
 		RpcDefinition rpc = JSONObject.parseObject(buffer,RpcDefinition.class);
@@ -59,7 +62,7 @@ public class ServerHandler extends SimpleChannelHandler{
 		//Object result1 = InvokeService.invokeService(rpc);
 		RpcHystrixCommand rpcHystrixCommand = new RpcHystrixCommand(rpc);
 		Object result1 = rpcHystrixCommand.execute();
-		System.out.println(result1);
+		log.info(result1.toString());
 		if(result1.getClass()==String.class){
 			
 			context.getChannel().write(result1);

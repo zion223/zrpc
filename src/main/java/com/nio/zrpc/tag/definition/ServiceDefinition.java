@@ -3,31 +3,40 @@ package com.nio.zrpc.tag.definition;
 public class ServiceDefinition {
 
 	private String id;
+	private String name;
+	private String tag;
+	private String address;
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	private String port;
 	public String getId() {
 		return id;
 	}
 	public void setId(String id) {
 		this.id = id;
 	}
-	private String interfaceName;
-	private String interfaceImplName;
-	public String getInterfaceImplName() {
-		return interfaceImplName;
+	public String getName() {
+		return name;
 	}
-	public void setInterfaceImplName(String interfaceImplName) {
-		this.interfaceImplName = interfaceImplName;
+	public void setName(String name) {
+		this.name = name;
 	}
-	private String ref;
-	public String getInterfaceName() {
-		return interfaceName;
+	public String getTag() {
+		return tag;
 	}
-	public void setInterfaceName(String interfaceName) {
-		this.interfaceName = interfaceName;
+	public void setTag(String tag) {
+		this.tag = tag;
 	}
-	public String getRef() {
-		return ref;
+	public String getPort() {
+		return port;
 	}
-	public void setRef(String ref) {
-		this.ref = ref;
+	public void setPort(String port) {
+		this.port = port;
 	}
+	
+
 }

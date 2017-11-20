@@ -1,5 +1,6 @@
-package com.nio.consul.entity;
+package com.nio.zrpc.consul.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ServiceRegisterDefinition {
@@ -7,7 +8,7 @@ public class ServiceRegisterDefinition {
 	private String id;
 	private String name;
 	private List<String> tag;
-	private String adress;
+	private String address;
 	private int port;
 	public String getId() {
 		return id;
@@ -24,7 +25,19 @@ public class ServiceRegisterDefinition {
 		this.id = id;
 		this.name = name;
 		this.tag = tag;
-		this.adress = adress;
+		this.address = address;
+		this.port = port;
+	}
+	public ServiceRegisterDefinition(String id, String name, String tag,String address,
+			int port) {
+		super();
+		this.id = id;
+		this.name = name;
+		//暂时不使用tag
+		List<String> arrayList = new ArrayList<>();
+		arrayList.add("defaultTag");
+		this.tag = arrayList;
+		this.address = address;	
 		this.port = port;
 	}
 	public void setName(String name) {
@@ -37,10 +50,10 @@ public class ServiceRegisterDefinition {
 		this.tag = tag;
 	}
 	public String getAdress() {
-		return adress;
+		return address;
 	}
 	public void setAdress(String adress) {
-		this.adress = adress;
+		this.address = adress;
 	}
 	public int getPort() {
 		return port;

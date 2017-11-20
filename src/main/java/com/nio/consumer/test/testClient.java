@@ -14,16 +14,10 @@ public class testClient {
 
 		//发送序列化好的对象
 		Client client = new Client();
-		client.ZrpcClient(new InetSocketAddress("127.0.0.1",8000));
-		HelloService service = Client.refer(HelloService.class);
-		//String result = service.sayHello("Zrp");
-		//System.out.println("result:"+result);
+		client.ZrpcClient(new InetSocketAddress("127.0.0.1",8000),"com/nio/consumer/zrpc-consumer.xml");
+	
 		
-		User createUser = service.createUser("zhangrp", 12);
-		System.out.println("返回的user:"+createUser);
-		
-		//String resultHi = service.sayHi("ZRP");
-		//System.out.println(createUser);
+	
 		
 	}
 	

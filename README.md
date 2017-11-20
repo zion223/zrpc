@@ -17,7 +17,7 @@ zrpc是一款简洁易用的分布式服务化治理框架。
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jee="http://www.springframework.org/schema/jee"
 	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
-	xmlns:zrpc="http://www.lexueba.com/schema/service" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:zrpc="http://www.lexueba.com/schema/zrpc" xmlns:util="http://www.springframework.org/schema/util"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans.xsd
 	http://www.springframework.org/schema/context
@@ -26,8 +26,8 @@ zrpc是一款简洁易用的分布式服务化治理框架。
 	http://www.springframework.org/schema/jee/spring-jee-4.1.xsd
 	http://www.springframework.org/schema/util 
 	http://www.springframework.org/schema/util/spring-util-4.1.xsd
-	http://www.lexueba.com/schema/service
- 	http://www.lexueba.com/schema/service.xsd">
+	http://www.lexueba.com/schema/zrpc
+ 	http://www.lexueba.com/schema/zrpc.xsd">
 
 	
 	<!-- 
@@ -35,13 +35,14 @@ zrpc是一款简洁易用的分布式服务化治理框架。
 		<dubbo:registry id="dubbodemo" address="zookeeper://localhost:2181"/> 
 		<dubbo:protocol name="dubbo" port="28080"/> 
 		<dubbo:service registry="dubbodemo" timeout="3000" interface="com.chanshuyi.service.IUserService" ref="userService"/> 
-		实例化实现了接口的服务，维护一个map private String interfaceName; 接口名称 
-		private String methodName; 方法名称 private Object[] parameterTypes; 方法的参数类型 
-		private Object[] arguments; 方法参数 -->
+		实例化实现了接口的服务，维护一个map private String interfaceName;  -->
 
 	<!-- 暴露服务接口 -->
 	
-	<zrpc:service id="hello" interfaceName="com.nio.service.HelloService" ref="helloService" interfaceImplName="com.nio.provider.service.impl.HelloServiceImpl"/>
+	<zrpc:service  id="helloServiceId1" name="HelloService" address="127.0.0.1" port="8082"/>	
+	<zrpc:service  id="helloServiceId2" name="HelloService" address="127.0.0.1" port="8081"/>
+	
+	<zrpc:registry id="registry" address="Consul://127.0.0.1:8500"/>
 
 </beans>
 ```
@@ -49,11 +50,10 @@ zrpc是一款简洁易用的分布式服务化治理框架。
 #### 启动类
 ```java
 public class TestServer {
-
+	private static final Logger log = LoggerFactory.getLogger(TestServer.class);
 	public static void main(String[] args) {
-		  //创建服务器    地址和xml文件的路径
+		 //创建服务器    地址和xml文件的路径
 		  Server.ZrpcServer(new InetSocketAddress("127.0.0.1",8000),"com/nio/provider/zrpc-provider.xml");
-		  
 	}
 }
 
@@ -65,7 +65,7 @@ public class TestServer {
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:zrpc="http://www.lexueba.com/schema/reference"
+	xmlns:zrpc="http://www.lexueba.com/schema/zrpc"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jee="http://www.springframework.org/schema/jee"
 	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
  	xmlns:util="http://www.springframework.org/schema/util"
@@ -77,12 +77,12 @@ public class TestServer {
 	http://www.springframework.org/schema/jee/spring-jee-4.1.xsd
 	http://www.springframework.org/schema/util 
 	http://www.springframework.org/schema/util/spring-util-4.1.xsd
-	http://www.lexueba.com/schema/reference
- 	http://www.lexueba.com/schema/reference.xsd">
+	http://www.lexueba.com/schema/zrpc
+ 	http://www.lexueba.com/schema/zrpc.xsd">
 
 
 <!-- 
-	<dubbo:application name="dubbodemo-consumer"/>
+    <dubbo:application name="dubbodemo-consumer"/>
 	 
     <dubbo:registry address="zookeeper://localhost:2181"/>
     
@@ -91,29 +91,29 @@ public class TestServer {
     <dubbo:reference id="userService" interface="com.chanshuyi.service.IUserService"/>
 
  -->
-	<zrpc:reference id="helloService" interfaceName="com.nio.service.HelloService"/>
-	
+	<zrpc:reference id="helloService" interfaceName="com.nio.service.HelloService" strategy="hash"/>
+	<!-- consul 地址127.0.0.1:8500从配置文件中获取 -->
 </beans>
 ```
 #### 启动类
 
 ```java
 public class testClient {
-
+	private static final Logger log = LoggerFactory.getLogger(testClient.class);
 	public static void main(String[] args) throws NoSuchMethodException, SecurityException, ClassNotFoundException {
 	
 
-		//发送序列化好的对象
-		Client.ZrpcClient(new InetSocketAddress("127.0.0.1",8000));
-		HelloService service = Client.refer(HelloService.class);
-		//String result = service.sayHello("Zrp");
-		//log.info("result:"+result);
+		Client client = new Client();
+		client.ZrpcClient(new InetSocketAddress("127.0.0.1",8000),"com/nio/consumer/zrpc-consumer.xml");
 		
-//		User createUser = service.createUser("zhangrp", "12");
+		//服务的ID和负载均衡策略
+		//HelloService service = (HelloService) Client.refer(HelloService.class);
+		HelloService service = (HelloService) Client.getBean("helloService");
+		
+		String sayHello = service.sayHello("zrp");
+		log.info(sayHello);
+//		User createUser = service.createUser("zhangrp",12);
 //		log.info("返回的user:"+createUser);
-		
-		//String resultHi = service.sayHi("ZRP");
-		//log.info(createUser);
 		
 	}
 	

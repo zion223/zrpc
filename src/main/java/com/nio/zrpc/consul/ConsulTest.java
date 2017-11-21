@@ -2,7 +2,7 @@ package com.nio.zrpc.consul;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,12 +64,11 @@ public class ConsulTest {
 	@Test
 	public void testRegister() throws IOException {  
 		//构造需要注册的服务对象Definition
-		 ArrayList<String> tagList = new ArrayList<String>();
-		 tagList.add("v2");
+	
 		 //更改ID可同时注册多个服务
-		 ServiceRegisterDefinition definition = new ServiceRegisterDefinition("helloService1", "helloService",tagList, "127.0.0.1", 8082);
-		 
-         //serviceRegister(definition);  
+		 ServiceRegisterDefinition definition = new ServiceRegisterDefinition("helloService", "HelloService","defaultTag", "127.0.0.1", "8082 8081");
+		 ConsulUtil consulUtil = new ConsulUtil("127.0.0.1:8500");
+		 consulUtil.serviceRegister(definition);  
 		
 		
         
@@ -90,7 +89,7 @@ public class ConsulTest {
 	public void testGet() throws IOException{
 		//根据服务名 找到在注册中心注册的实例  负载均衡
 		ConsulUtil consulUtil = new ConsulUtil("127.0.0.1:8500");
-        ServiceRequest serviceGet = consulUtil.serviceGet("HelloService",new HashStrategy());
+        ServiceRequest serviceGet = consulUtil.serviceGet("helloService",new HashStrategy());
         
        
         //构造服务请求对象 通过OkHttp发送请求
@@ -100,5 +99,6 @@ public class ConsulTest {
         hashMap.put("param1", "21");
         User response =manger.getBeanExecute("http:"+serviceGet.getAddress()+":"+serviceGet.getPort()+"/createUser", hashMap, User.class);
        	log.info(response.toString());
+       	
 	}
 }

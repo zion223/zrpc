@@ -2,6 +2,7 @@ package com.nio.zrpc.consul;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,7 @@ public class ConsulUtil {
 	public ConsulUtil(String address){
 		if(address.equals("")){
 			log.error("注册中心的地址呢???");
-			throw new NullPointerException();
+			throw new NullPointerException("注册中心的地址呢???");
 		}
 		consul=Consul.builder().withHostAndPort(HostAndPort.fromString(address)).build();
 	}
@@ -38,18 +39,24 @@ public class ConsulUtil {
 	public void serviceRegister(ServiceRegisterDefinition definition){
 		AgentClient agent = consul.agentClient();
 
-		ImmutableRegCheck check = ImmutableRegCheck.builder().http("http://"+definition.getAdress()+":"+definition.getPort()+"/health").interval("5s").build();
 		
 		Builder builder = ImmutableRegistration.builder();
 		//builder.id("tomcat").name("tomcatService").addTags("v1").address("192.168.152.132").port(8080).addChecks(check);
-		builder.id(definition.getId()).name(definition.getName()).addAllTags(definition.getTag()).address(definition.getAdress()).port(definition.getPort()).addChecks(check);
-		agent.register(builder.build());
+		for(Integer port:definition.getPort()){
+			ImmutableRegCheck check = ImmutableRegCheck.builder().http("http://"+definition.getAdress()+":"+port+"/health").interval("10s").build();
+			String id=definition.getId()+Integer.lowestOneBit(port);
+			
+			builder.id(id).name(definition.getName()).addAllTags(definition.getTag()).address(definition.getAdress()).port(port).addChecks(check);
+			agent.register(builder.build());
+		}
+		
 		
 	}
 	
 	public ServiceRequest serviceGet(String name,LoadBalanceStrategy strategy) {  
         HealthClient client = consul.healthClient();  
-        ConsulResponse object= client.getAllServiceInstances(name);
+        @SuppressWarnings("rawtypes")
+		ConsulResponse object= client.getAllServiceInstances(name);
         List<ImmutableServiceHealth> serviceHealths=(List<ImmutableServiceHealth>)object.getResponse();
         
         

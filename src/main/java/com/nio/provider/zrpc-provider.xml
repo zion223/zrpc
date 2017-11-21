@@ -27,8 +27,8 @@
 	<!-- 暴露服务接口 -->
 	<!-- 在配置文件中获取服务相关信息封装后使用consul注册 -->
  	<!-- id name tag address port -->
-	<zrpc:service  id="helloServiceId1" name="HelloService" address="127.0.0.1" port="8082"/>	
-	<zrpc:service  id="helloServiceId2" name="HelloService" address="127.0.0.1" port="8081"/>
+	<zrpc:service  id="helloService" name="HelloService" address="127.0.0.1" port="8082 8081"/>
+	<!-- Consul注册地址       id必须为registry -->	
 	<zrpc:registry id="registry" address="Consul://127.0.0.1:8500"/>
 	
 </beans>

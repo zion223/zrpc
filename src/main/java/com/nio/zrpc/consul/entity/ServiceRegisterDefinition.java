@@ -9,7 +9,7 @@ public class ServiceRegisterDefinition {
 	private String name;
 	private List<String> tag;
 	private String address;
-	private int port;
+	private List<Integer> port;
 	public String getId() {
 		return id;
 	}
@@ -20,7 +20,7 @@ public class ServiceRegisterDefinition {
 		return name;
 	}
 	public ServiceRegisterDefinition(String id, String name, List<String> tag,
-			String adress, int port) {
+			String address, List<Integer> port) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -29,16 +29,21 @@ public class ServiceRegisterDefinition {
 		this.port = port;
 	}
 	public ServiceRegisterDefinition(String id, String name, String tag,String address,
-			int port) {
+			String port) {
 		super();
 		this.id = id;
 		this.name = name;
-		//暂时不使用tag
+		// TODO 暂时不支持tag
 		List<String> arrayList = new ArrayList<>();
 		arrayList.add("defaultTag");
 		this.tag = arrayList;
 		this.address = address;	
-		this.port = port;
+		String[] splitport = port.split(" ");
+		ArrayList<Integer> portlist = new ArrayList<Integer>();
+		for(String sp:splitport){
+			portlist.add(Integer.parseInt(sp));
+		}
+		this.port = portlist;
 	}
 	public void setName(String name) {
 		this.name = name;
@@ -55,10 +60,10 @@ public class ServiceRegisterDefinition {
 	public void setAdress(String adress) {
 		this.address = adress;
 	}
-	public int getPort() {
+	public List<Integer> getPort() {
 		return port;
 	}
-	public void setPort(int port) {
+	public void setPort(List<Integer> port) {
 		this.port = port;
 	}
 	

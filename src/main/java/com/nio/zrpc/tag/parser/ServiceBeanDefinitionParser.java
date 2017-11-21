@@ -10,7 +10,7 @@ import org.w3c.dom.Element;
 import com.nio.zrpc.consul.entity.ServiceRegisterDefinition;
 import com.nio.zrpc.consul.request.ServiceRequest;
 import com.nio.zrpc.core.InvokeService;
-import com.nio.zrpc.server.Server;
+import com.nio.zrpc.server.ZrpcServer;
 import com.nio.zrpc.tag.definition.ServiceDefinition;
 
 public class ServiceBeanDefinitionParser extends
@@ -27,7 +27,10 @@ public class ServiceBeanDefinitionParser extends
 		String name= element.getAttribute("name");
 		String address= element.getAttribute("address");
 		String tag = element.getAttribute("tag");
-		Integer port =Integer.parseInt(element.getAttribute("port"));
+		String portmsg = element.getAttribute("port");
+		String[] splitport = portmsg.split(" ");
+		
+		Integer port =Integer.parseInt(portmsg);
 
 		if (StringUtils.hasText(address)) {
 			bean.addPropertyValue("address", address);
@@ -51,9 +54,15 @@ public class ServiceBeanDefinitionParser extends
 		//InvokeService.services.put(interfaceName, service);
 		
 		
-		Server.serviceList.add(new ServiceRegisterDefinition(id, name,tag,address, port));
+		ZrpcServer.serviceList.add(new ServiceRegisterDefinition(id, name,tag,address, portmsg));
 	
 	
+	}
+	public static void main(String[] args) {
+		String msg="8081";
+		String[] split = msg.split(" ");
+		System.out.println(split.length);
+		System.out.println(split[0]+":"+split[1]+""+split[2]);
 	}
 
 }

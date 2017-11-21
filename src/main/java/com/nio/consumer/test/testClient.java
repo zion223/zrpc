@@ -1,10 +1,6 @@
 package com.nio.consumer.test;
-
-import java.net.InetSocketAddress;
-
-import com.nio.entity.User;
 import com.nio.service.HelloService;
-import com.nio.zrpc.client.Client;
+import com.nio.zrpc.client.ZrpcClient;
 
 
 public class testClient {
@@ -13,13 +9,14 @@ public class testClient {
 	
 
 		//发送序列化好的对象
-		Client client = new Client();
-		client.ZrpcClient(new InetSocketAddress("127.0.0.1",8000),"com/nio/consumer/zrpc-consumer.xml");
-	
+		ZrpcClient client = new ZrpcClient();
+		client.ZrpcClient("127.0.0.1:8000","com/nio/consumer/zrpc-consumer.xml");
+		HelloService service = (HelloService) ZrpcClient.getBean("helloService");
 		
-	
+		String sayHello = service.sayHello("zrp");
 		
 	}
+
 	
 	
 }

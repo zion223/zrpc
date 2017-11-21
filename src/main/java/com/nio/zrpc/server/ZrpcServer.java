@@ -1,6 +1,7 @@
 package com.nio.zrpc.server;
 
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -23,12 +24,14 @@ import com.nio.zrpc.consul.entity.ServiceRegisterDefinition;
 import com.nio.zrpc.consul.request.ServiceRequest;
 import com.nio.zrpc.tag.definition.RegistryDefinition;
 
-public class Server {
-	private static final Logger log = LoggerFactory.getLogger(Server.class);
+public class ZrpcServer {
+	private static final Logger log = LoggerFactory.getLogger(ZrpcServer.class);
 
 	private static volatile String registryAddress;
 	public static List<ServiceRegisterDefinition> serviceList=new ArrayList<ServiceRegisterDefinition>();
-	public static void ZrpcServer(InetSocketAddress add,String path) {
+	public static void StartServer(String add,String path) {
+		//add  "127.0.0.1:8080"
+		SocketAddress address =new InetSocketAddress(add.split(":")[0], Integer.parseInt(add.split(":")[1]));
 		ServerBootstrap serverBootstrap = new ServerBootstrap();
 		
 		ExecutorService boss = Executors.newCachedThreadPool();
@@ -49,11 +52,16 @@ public class Server {
 				return pipeline;
 			}
 		});
-		serverBootstrap.bind(add);
+		serverBootstrap.bind(address);
 		log.info("Server started!!!!!!!!!!!");
 		//获取Spring容器
 		SpringInit(path);
 		
+	}
+	public static void main(String[] args) {
+		String msg="127.0.0.1:8080";
+		String[] split = msg.split(":");
+		System.out.println(split[0]+":"+split[1]);
 	}
 	private static void SpringInit(String path){
 		 ApplicationContext ac = new ClassPathXmlApplicationContext(path);
@@ -65,6 +73,9 @@ public class Server {
 		  // id name tag address port
 	
 		  for(ServiceRegisterDefinition srd:serviceList){
+			  
+			  List<Integer> port = srd.getPort();
+			  
 			  consulUtil.serviceRegister(srd);
 		  }
 		  //consulUtil.serviceRegister();

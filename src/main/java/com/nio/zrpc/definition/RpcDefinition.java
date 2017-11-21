@@ -1,10 +1,16 @@
 package com.nio.zrpc.definition;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import com.nio.zrpc.hystrix.FallBackDefinition;
 
-public class RpcDefinition {
+public class RpcDefinition implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private String interfaceName;
 

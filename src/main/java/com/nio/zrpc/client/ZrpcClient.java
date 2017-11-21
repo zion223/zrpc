@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,11 +37,12 @@ import com.nio.consumer.controller.HelloServiceController;
 import com.nio.zrpc.definition.RpcDefinition;
 import com.nio.zrpc.hystrix.FallBackDefinition;
 import com.nio.zrpc.hystrix.anno.Command;
+import com.nio.zrpc.serialization.KryoUtil;
 import com.nio.zrpc.tag.definition.ReferenceDefinition;
 import com.nio.zrpc.util.ClassUtil;
 
-public class Client {
-	private static final Logger log = LoggerFactory.getLogger(Client.class);
+public class ZrpcClient {
+	private static final Logger log = LoggerFactory.getLogger(ZrpcClient.class);
 	private List<String>  packageName = new ArrayList<String>();
 	private static HashMap<String, Object> fallbackMap = new HashMap<String, Object>();
 	private static volatile ApplicationContext ac;
@@ -50,7 +52,7 @@ public class Client {
 	// protected static Object lock = new Object();
 	volatile static Class returnType;
 
-	public Client() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+	public ZrpcClient() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		// 维护一个controller集合
 		// 判断方法上是否有command注解
 		
@@ -97,7 +99,8 @@ public class Client {
 		}
 	}
 
-	public  void ZrpcClient(InetSocketAddress add,String path ) {
+	public  void ZrpcClient(String add,String path ) {
+		SocketAddress address =new InetSocketAddress(add.split(":")[0], Integer.parseInt(add.split(":")[1]));
 
 		ClientBootstrap clientBootstrap = new ClientBootstrap();
 		ExecutorService boss = Executors.newCachedThreadPool();
@@ -114,7 +117,7 @@ public class Client {
 				return pipeline;
 			}
 		});
-		ChannelFuture connect = clientBootstrap.connect(add);
+		ChannelFuture connect = clientBootstrap.connect(address);
 		channel = connect.getChannel();
 		log.info("client start");
 		SpringInit(path);
@@ -143,7 +146,7 @@ public class Client {
 
 	@SuppressWarnings("unchecked")
 	public static Object refer(final Class<?> interfaceName) {
-		return  Proxy.newProxyInstance(Client.class.getClassLoader(),
+		return  Proxy.newProxyInstance(ZrpcClient.class.getClassLoader(),
 				new Class[] { interfaceName }, new InvocationHandler() {
 
 					public Object invoke(Object proxy, Method method,
@@ -170,7 +173,10 @@ public class Client {
 						RpcDefinition rpc = new RpcDefinition(infName,
 								method.getName(), method.getParameterTypes(),
 								arguments,fallback);
+						// TODO 加入其他序列化协议支持(kryo)
 						String jsonString = JSONObject.toJSONString(rpc);
+						
+						String kryoString = KryoUtil.serializationObject(rpc);
 						ChannelFuture future = channel.write(jsonString);
 						future.addListener(new ChannelFutureListener() {
 
@@ -208,23 +214,22 @@ class getResultThread extends Thread {
 					lock.wait();
 					log.info("得到result:" + result+result.getClass());
 					
-					if (Client.returnType == String.class) {
+					if (ZrpcClient.returnType == String.class) {
 						
 						return;
-					} else if(result.getClass()==Client.returnType){
+					} else if(result.getClass()==ZrpcClient.returnType){
 						return ;
 					}else{
 						//class com.nio.entity.User
-						log.info("返回类型:" + Client.returnType);
+						log.info("返回类型:" + ZrpcClient.returnType);
 					
 							Object parseObject = JSONObject.parseObject(
-									result.toString(), Client.returnType);
+									result.toString(), ZrpcClient.returnType);
 
 							log.info(parseObject.toString());
 							result = parseObject;
 							log.info("get Thread:"
 									+ Thread.currentThread().getName());
-						
 						return;
 					}
 				} catch (InterruptedException e) {

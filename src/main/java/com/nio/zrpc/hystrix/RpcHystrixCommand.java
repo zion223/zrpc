@@ -3,15 +3,12 @@ package com.nio.zrpc.hystrix;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.omg.CORBA.SystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
-import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixThreadPoolProperties;
 import com.nio.zrpc.core.InvokeService;
@@ -24,15 +21,14 @@ public class RpcHystrixCommand extends HystrixCommand<Object> {
 	private final RpcDefinition invoker;
 
 	public RpcHystrixCommand(RpcDefinition invoker) {
-		// super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey(invoker.getMethodName()))
-		// .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
-		// .withCircuitBreakerRequestVolumeThreshold(20)//10秒钟内至少19此请求失败，熔断器才发挥起作用
-		// .withCircuitBreakerSleepWindowInMilliseconds(30000)//熔断器中断请求30秒后会进入半打开状态,放部分流量过去重试
-		// .withCircuitBreakerErrorThresholdPercentage(50)//错误率达到50开启熔断保护
-		// .withExecutionTimeoutEnabled(false))//使用rpc的超时，禁用这里的超时
-		// .andThreadPoolPropertiesDefaults(HystrixThreadPoolProperties.Setter().withCoreSize(DEFAULT_THREADPOOL_CORE_SIZE)));//线程池为30
+		 super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey(invoker.getMethodName()))
+		 .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
+		 .withCircuitBreakerRequestVolumeThreshold(20)//10秒钟内至少19此请求失败，熔断器才发挥起作用
+		 .withCircuitBreakerSleepWindowInMilliseconds(30000)//熔断器中断请求30秒后会进入半打开状态,放部分流量过去重试
+		 .withCircuitBreakerErrorThresholdPercentage(50)//错误率达到50开启熔断保护
+		 .withExecutionTimeoutEnabled(false))//使用rpc的超时，禁用这里的超时
+		 .andThreadPoolPropertiesDefaults(HystrixThreadPoolProperties.Setter().withCoreSize(DEFAULT_THREADPOOL_CORE_SIZE)));//线程池为30
 
-		super(HystrixCommandGroupKey.Factory.asKey("ExampleGroup"));
 		this.invoker = invoker;
 	}
 
@@ -51,7 +47,7 @@ public class RpcHystrixCommand extends HystrixCommand<Object> {
 	protected String getFallback() {
 		// 本地方法调用
 		//{"name":"zhangrp","age":13}
-		//log.info("===========getFallback==============");
+		
 		Object result = null;
 		try {
 			log.info(invoker.getDef().getFallbackClass());
@@ -59,6 +55,7 @@ public class RpcHystrixCommand extends HystrixCommand<Object> {
 			Method method = clazz.getDeclaredMethod(invoker.getDef()
 					.getFallbackMethod());
 			Object obj = clazz.newInstance();
+			// TODO 服务失败调用的方法不可以传参数
 			result = method.invoke(obj, null);
 			log.info("==============fallback========="+result);
 			String jsonString = JSON.toJSONString(result);
@@ -67,7 +64,6 @@ public class RpcHystrixCommand extends HystrixCommand<Object> {
 			e.printStackTrace();
 			throw new RuntimeException("No fallback available.");
 		}
-		//return result;
 	}
 
 }

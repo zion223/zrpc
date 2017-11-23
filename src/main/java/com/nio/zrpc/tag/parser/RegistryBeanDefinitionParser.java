@@ -31,9 +31,9 @@ public class RegistryBeanDefinitionParser extends
 		if (StringUtils.hasText(_address)) {
 			bean.addPropertyValue("address", _address);
 		}
-		if (StringUtils.hasText(id)) {
-			bean.addPropertyValue("id", id);
-		}
+		
+		bean.addPropertyValue("id", "registry");
+		
 		bean.addPropertyValue("name",address.split(":")[0]);
 		
 	}

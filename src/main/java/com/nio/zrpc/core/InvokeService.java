@@ -41,10 +41,6 @@ public class InvokeService {
 			responseString = new ZookeeperInterceptor(definition).doIntercepptor();
 		}
 		
-		
-		
-
-		
 		return responseString;
 
 	}

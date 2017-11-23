@@ -1,15 +1,12 @@
 package com.nio.zrpc.tag.parser;
 
-import java.util.ArrayList;
 
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Element;
 
-import com.nio.zrpc.consul.entity.ServiceRegisterDefinition;
-import com.nio.zrpc.consul.request.ServiceRequest;
-import com.nio.zrpc.core.InvokeService;
+import com.nio.zrpc.registry.consul.entity.ServiceRegisterDefinition;
 import com.nio.zrpc.server.ZrpcServer;
 import com.nio.zrpc.tag.definition.ServiceDefinition;
 
@@ -28,7 +25,7 @@ public class ServiceBeanDefinitionParser extends
 		String address= element.getAttribute("address");
 		String tag = element.getAttribute("tag");
 		String portmsg = element.getAttribute("port");
-		String[] splitport = portmsg.split(" ");
+		
 		
 		Integer port =Integer.parseInt(portmsg);
 
@@ -54,15 +51,10 @@ public class ServiceBeanDefinitionParser extends
 		//InvokeService.services.put(interfaceName, service);
 		
 		
-		ZrpcServer.serviceList.add(new ServiceRegisterDefinition(id, name,tag,address, portmsg));
+		ZrpcServer.ConserviceList.add(new ServiceRegisterDefinition(id, name,tag,address, portmsg));
 	
 	
 	}
-	public static void main(String[] args) {
-		String msg="8081";
-		String[] split = msg.split(" ");
-		System.out.println(split.length);
-		System.out.println(split[0]+":"+split[1]+""+split[2]);
-	}
+
 
 }

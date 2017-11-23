@@ -1,4 +1,4 @@
-package com.nio.zrpc.consul;
+package com.nio.zrpc.registry.consul;
 
 import java.io.IOException;
 import java.util.Iterator;

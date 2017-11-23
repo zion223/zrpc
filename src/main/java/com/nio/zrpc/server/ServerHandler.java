@@ -27,8 +27,6 @@ public class ServerHandler extends SimpleChannelHandler{
 	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent event)
 			throws Exception {
 		log.info("channelConnected"+event.getChannel().getRemoteAddress());
-		//判断连接服务器  过滤
-		//ctx.getChannel().close();
 		super.channelConnected(ctx, event);
 	}
 
@@ -61,13 +59,16 @@ public class ServerHandler extends SimpleChannelHandler{
 		//调用service  使用hystrix进行调用
 		//Object result1 = InvokeService.invokeService(rpc);
 		RpcHystrixCommand rpcHystrixCommand = new RpcHystrixCommand(rpc);
+		
 		Object result1 = rpcHystrixCommand.execute();
-		log.info(result1.toString());
+		log.info(result1.toString()+result1.getClass());
+		
 		if(result1.getClass()==String.class){
 			
 			context.getChannel().write(result1);
 		}else{
 			String jsonString = JSONObject.toJSONString(result1);
+			System.out.println("序列化后的对象"+jsonString);
 			context.getChannel().write(jsonString);
 		}
 		

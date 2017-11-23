@@ -4,11 +4,11 @@ zrpc是一款简洁易用的分布式服务化治理框架。
 ## 特性
 - 使用自定义标签与Spring整合
 - 支持spring boot应用
-- 使用 Consul作为注册中心
+- 可选择使用Consul或者Zookeeper作为注册中心
 - 支持tcp/http协议的服务
 - 客户端自动恢复
 - 使用Hystrix作为服务保护机制
-
+- 支持服务降级
 ***
 
 ### 服务端
@@ -39,8 +39,8 @@ zrpc是一款简洁易用的分布式服务化治理框架。
 
 	<!-- 暴露服务接口 -->
 	
-	<zrpc:service  id="helloServiceId1" name="HelloService" address="127.0.0.1" port="8082"/>	
-	<zrpc:service  id="helloServiceId2" name="HelloService" address="127.0.0.1" port="8081"/>
+	<zrpc:service  id="helloServiceId1" name="HelloService" address="127.0.0.1" port="8082 8081"/>	
+	
 	
 	<zrpc:registry id="registry" address="Consul://127.0.0.1:8500"/>
 
@@ -53,7 +53,7 @@ public class TestServer {
 	private static final Logger log = LoggerFactory.getLogger(TestServer.class);
 	public static void main(String[] args) {
 		 //创建服务器    地址和xml文件的路径
-		  Server.ZrpcServer(new InetSocketAddress("127.0.0.1",8000),"com/nio/provider/zrpc-provider.xml");
+		  Server.ZrpcServer("127.0.0.1:8000","com/nio/provider/zrpc-provider.xml");
 	}
 }
 

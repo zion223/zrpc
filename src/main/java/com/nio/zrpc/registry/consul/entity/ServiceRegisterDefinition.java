@@ -1,4 +1,4 @@
-package com.nio.zrpc.consul.entity;
+package com.nio.zrpc.registry.consul.entity;
 
 import java.util.ArrayList;
 import java.util.List;

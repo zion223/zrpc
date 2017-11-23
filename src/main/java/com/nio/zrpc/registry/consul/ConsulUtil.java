@@ -1,4 +1,4 @@
-package com.nio.zrpc.consul;
+package com.nio.zrpc.registry.consul;
 
 import java.util.HashMap;
 import java.util.List;
@@ -8,9 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.net.HostAndPort;
-import com.nio.zrpc.consul.entity.ServiceRegisterDefinition;
-import com.nio.zrpc.consul.request.ServiceRequest;
-import com.nio.zrpc.consul.strategy.LoadBalanceStrategy;
+import com.nio.zrpc.registry.consul.entity.ServiceRegisterDefinition;
+import com.nio.zrpc.registry.consul.request.ServiceRequest;
+import com.nio.zrpc.registry.consul.strategy.LoadBalanceStrategy;
 import com.orbitz.consul.AgentClient;
 import com.orbitz.consul.Consul;
 import com.orbitz.consul.HealthClient;

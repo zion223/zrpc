@@ -3,6 +3,14 @@ package com.nio.zrpc.tag.definition;
 public class RegistryDefinition {
 
 	
+private String name;
+	public String getName() {
+	return name;
+}
+
+public void setName(String name) {
+	this.name = name;
+}
 
 	private String address;
 	private String id;

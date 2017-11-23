@@ -1,4 +1,4 @@
-package com.nio.zrpc.consul.request;
+package com.nio.zrpc.registry.consul.request;
 
 import java.util.List;
 

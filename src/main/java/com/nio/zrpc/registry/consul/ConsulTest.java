@@ -1,8 +1,7 @@
-package com.nio.zrpc.consul;
+package com.nio.zrpc.registry.consul;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,10 +11,10 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.net.HostAndPort;
 import com.nio.entity.User;
-import com.nio.zrpc.consul.entity.ServiceRegisterDefinition;
-import com.nio.zrpc.consul.request.ServiceRequest;
-import com.nio.zrpc.consul.strategy.HashStrategy;
 import com.nio.zrpc.hystrix.anno.Command;
+import com.nio.zrpc.registry.consul.entity.ServiceRegisterDefinition;
+import com.nio.zrpc.registry.consul.request.ServiceRequest;
+import com.nio.zrpc.registry.consul.strategy.HashStrategy;
 import com.orbitz.consul.Consul;
 import com.orbitz.consul.HealthClient;
 import com.orbitz.consul.KeyValueClient;

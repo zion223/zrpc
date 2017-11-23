@@ -212,7 +212,7 @@ class getResultThread extends Thread {
 			synchronized (lock) {
 				try {
 					lock.wait();
-					log.info("得到result:" + result+result.getClass());
+					log.info("得到result:" + result+result.toString()+result.getClass());
 					
 					if (ZrpcClient.returnType == String.class) {
 						

@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 import com.nio.entity.User;
 import com.nio.service.HelloService;
 import com.nio.zrpc.client.ZrpcClient;
-import com.nio.zrpc.consul.ConsulUtil;
 import com.nio.zrpc.hystrix.anno.Command;
+import com.nio.zrpc.registry.consul.ConsulUtil;
 
 @Service
 @Controller
@@ -22,13 +22,7 @@ public class HelloServiceController {
 	@Command(fallbackType="com.nio.service.HelloService")
 	public void helloService() throws ClassNotFoundException, InstantiationException, IllegalAccessException{
 		ZrpcClient client = new ZrpcClient();
-//		client.ZrpcClient(new InetSocketAddress("127.0.0.1",8000));
-//		HelloService service = Client.refer(HelloService.class);
-//		//String result = service.sayHello("Zrp");
-//		//log.info("result:"+result);
 
-//		User createUser = service.createUser("zhangrp", "12");
-//		log.info("返回的user:"+createUser);
 	}
 	
 	public User fall(){
@@ -39,7 +33,7 @@ public class HelloServiceController {
 	}
 	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		ZrpcClient client = new ZrpcClient();
-		client.ZrpcClient("127.0.0.1:8000","com/nio/consumer/zrpc-consumer.xml");
+		client.ZrpcClient("127.0.0.1:8000","com/nio/consumer/consumer.xml");
 		
 		//服务的ID和负载均衡策略
 		//HelloService service = (HelloService) Client.refer(HelloService.class);

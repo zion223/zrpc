@@ -4,7 +4,7 @@
 
 	<groupId>com.nio</groupId>
 	<artifactId>ZRPC</artifactId>
-	<version>0.0.1</version>
+	<version>0.1.0</version>
 	<packaging>jar</packaging>
 
 	<name>ZRPC</name>
@@ -30,6 +30,12 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 			<version>4.3.12.RELEASE</version>
+		</dependency>
+		<!-- git pull --rebase origin master git push -u origin master-->
+		<dependency>
+			<groupId>com.101tec</groupId>
+			<artifactId>zkclient</artifactId>
+			<version>0.3</version>
 		</dependency>
 
 		<dependency>

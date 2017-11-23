@@ -1,7 +1,13 @@
 package com.nio.zrpc.hystrix;
 
-public class FallBackDefinition {
+import java.io.Serializable;
 
+public class FallBackDefinition implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String fallbackClass;
 	private String fallbackMethod;
 	public String getFallbackClass() {

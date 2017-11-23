@@ -14,7 +14,7 @@ public class ClientHandler extends SimpleChannelHandler {
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
 			throws Exception {
-		String s = (String) e.getMessage();
+		String s =  (String) e.getMessage();
 		
 		log.info("服务调用成功，返回的结果是:"+s);
 		

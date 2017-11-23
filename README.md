@@ -39,10 +39,11 @@ zrpc是一款简洁易用的分布式服务化治理框架。
 
 	<!-- 暴露服务接口 -->
 	
-	<zrpc:service  id="helloServiceId1" name="HelloService" address="127.0.0.1" port="8082 8081"/>	
+	<!--<zrpc:service  id="helloService" name="HelloService" address="127.0.0.1" port="8082 8081"/>-->	
+	<zrpc:zkservice id="helloService interfaceName="com.nio.service.HelloService" ref="com.nio.service.impl.HelloServiceImpl"/>
 	
-	
-	<zrpc:registry id="registry" address="Consul://127.0.0.1:8500"/>
+	<!--<zrpc:registry id="registry" address="Consul://127.0.0.1:8500"/>-->
+	<zrpc:registry  address="Zookeeper://192.168.252.144:2181"/>
 
 </beans>
 ```

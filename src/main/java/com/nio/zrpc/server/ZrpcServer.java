@@ -36,6 +36,7 @@ public class ZrpcServer {
 	 * flag=false 为zookeeper注册
 	 */
 	public static volatile  boolean registryFlag;
+	public  static  ApplicationContext ac;
 	
 	//consul的注册信息
 	public static List<ServiceRegisterDefinition> ConserviceList=new ArrayList<ServiceRegisterDefinition>();
@@ -77,8 +78,8 @@ public class ZrpcServer {
 		System.out.println(split[0]+":"+split[1]);
 	}
 	private static void SpringInit(String path){
-		 @SuppressWarnings("resource")
-		ApplicationContext ac = new ClassPathXmlApplicationContext(path);
+		
+		 ac = new ClassPathXmlApplicationContext(path);
 		 RegistryDefinition registryDef = (RegistryDefinition) ac.getBean("registry");
 		 log.info("注册中心为:"+registryDef.getName());
 		 registryAddress = registryDef.getAddress();
@@ -120,5 +121,11 @@ public class ZrpcServer {
 	}
 	public static String getRegistryAddress(){
 		return registryAddress;
+	}
+	public static ApplicationContext getApplicationContext(){
+		if(ac==null){
+			throw new NullPointerException("Spring容器未初始化成功");
+		}
+		return ac;
 	}
 }

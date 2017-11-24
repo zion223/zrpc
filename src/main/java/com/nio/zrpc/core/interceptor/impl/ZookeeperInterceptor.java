@@ -1,11 +1,13 @@
-package com.nio.zrpc.core.interceptor;
+package com.nio.zrpc.core.interceptor.impl;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.I0Itec.zkclient.ZkClient;
+import org.springframework.context.ApplicationContext;
 
+import com.nio.zrpc.core.interceptor.ServiceInterceptor;
 import com.nio.zrpc.definition.RpcDefinition;
 import com.nio.zrpc.registry.zookeeper.ZkConstant;
 import com.nio.zrpc.registry.zookeeper.ZookeeperUtil;
@@ -35,6 +37,7 @@ public class ZookeeperInterceptor implements ServiceInterceptor {
 		
 		//ZkClient zkClient = new ZkClient(ZrpcServer.getRegistryAddress());
 		ZkClient zkClient = ZookeeperUtil.getInstance();
+		
 		Object refName = zkClient.readData(ZkConstant.ROOT_TAG + "/"
 				+ interfaceName);
 		zkClient.close();
@@ -42,7 +45,11 @@ public class ZookeeperInterceptor implements ServiceInterceptor {
 		Class<?> refClazz = Class.forName(refName.toString());
 		Object[] parameterTypes = def.getParameterTypes();
 
-		Object refClass = refClazz.newInstance();
+		//Object refClass = refClazz.newInstance();
+		
+		//从Spring容器中获取bean
+		ApplicationContext context = ZrpcServer.getApplicationContext();
+		Object bean = context.getBean(refName.toString());
 		Class[] parameterType = new Class[parameterTypes.length];
 		for (int i = 0; i < parameterTypes.length; i++) {
 			parameterType[i] = (Class) Class.forName(parameterTypes[i]
@@ -51,7 +58,7 @@ public class ZookeeperInterceptor implements ServiceInterceptor {
 		Method method = refClazz.getDeclaredMethod(def.getMethodName(), parameterType);
 		Object result = null;
 		try {
-			result = method.invoke(refClass, def.getArguments());
+			result = method.invoke(bean, def.getArguments());
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {

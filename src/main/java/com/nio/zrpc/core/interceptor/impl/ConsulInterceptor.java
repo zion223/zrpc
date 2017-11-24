@@ -1,4 +1,4 @@
-package com.nio.zrpc.core.interceptor;
+package com.nio.zrpc.core.interceptor.impl;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -7,6 +7,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.nio.zrpc.core.interceptor.ServiceInterceptor;
 import com.nio.zrpc.definition.RpcDefinition;
 import com.nio.zrpc.registry.consul.ConsulUtil;
 import com.nio.zrpc.registry.consul.OkHttp3ClientManager;

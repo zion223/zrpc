@@ -9,15 +9,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.nio.zrpc.core.interceptor.ConsulInterceptor;
-import com.nio.zrpc.core.interceptor.ZookeeperInterceptor;
+import com.nio.zrpc.core.interceptor.impl.ZookeeperInterceptor;
+import com.nio.zrpc.core.interceptor.impl.ConsulInterceptor;
 import com.nio.zrpc.definition.RpcDefinition;
-import com.nio.zrpc.registry.consul.ConsulUtil;
-import com.nio.zrpc.registry.consul.OkHttp3ClientManager;
-import com.nio.zrpc.registry.consul.request.ServiceRequest;
-import com.nio.zrpc.registry.consul.strategy.HashStrategy;
 import com.nio.zrpc.server.ZrpcServer;
-import com.nio.zrpc.util.StringUtil;
 
 public class InvokeService {
 	private static final Logger log = LoggerFactory.getLogger(InvokeService.class);
@@ -31,17 +26,18 @@ public class InvokeService {
 			IllegalArgumentException, InvocationTargetException, IOException, InstantiationException {
 
 		
-		Object responseString = null;
+		Object response = null;
 		//判断请求处理的方式
 		if(ZrpcServer.registryFlag){
 			
 			//使用Consul处理请求
-			responseString= new ConsulInterceptor(definition).doIntercepptor();
+			response= new ConsulInterceptor(definition).doIntercepptor();
 		}else{
-			responseString = new ZookeeperInterceptor(definition).doIntercepptor();
+			//使用zk处理请求
+			response = new ZookeeperInterceptor(definition).doIntercepptor();
 		}
 		
-		return responseString;
+		return response;
 
 	}
 

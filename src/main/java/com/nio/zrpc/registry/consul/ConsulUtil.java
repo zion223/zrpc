@@ -43,6 +43,7 @@ public class ConsulUtil {
 		Builder builder = ImmutableRegistration.builder();
 		//builder.id("tomcat").name("tomcatService").addTags("v1").address("192.168.152.132").port(8080).addChecks(check);
 		for(Integer port:definition.getPort()){
+			// TODO 这里的服务检查间隔时间可设置
 			ImmutableRegCheck check = ImmutableRegCheck.builder().http("http://"+definition.getAdress()+":"+port+"/health").interval("10s").build();
 			String id=definition.getId()+Integer.lowestOneBit(port);
 			

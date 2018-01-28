@@ -25,7 +25,10 @@ public class ServiceBeanDefinitionParser extends
 		String address= element.getAttribute("address");
 		String tag = element.getAttribute("tag");
 		String portmsg = element.getAttribute("port");
-		
+		String time = element.getAttribute("checkTime");
+		if(com.orbitz.apache.commons.lang3.StringUtils.isNotBlank(time)){
+			time = "10s";
+		}
 		
 		Integer port =Integer.parseInt(portmsg);
 
@@ -41,6 +44,7 @@ public class ServiceBeanDefinitionParser extends
 		if (StringUtils.hasText(tag)) {
 			bean.addPropertyValue("ref", tag);
 		}
+	
 		
 		bean.addPropertyValue("port", port);
 		
@@ -51,7 +55,7 @@ public class ServiceBeanDefinitionParser extends
 		//InvokeService.services.put(interfaceName, service);
 		
 		
-		ZrpcServer.ConserviceList.add(new ServiceRegisterDefinition(id, name,tag,address, portmsg));
+		ZrpcServer.ConserviceList.add(new ServiceRegisterDefinition(id, name,tag,address, portmsg,time));
 	
 	
 	}

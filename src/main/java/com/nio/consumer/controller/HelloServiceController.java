@@ -31,18 +31,18 @@ public class HelloServiceController {
 		user.setName("0");
 		return user;
 	}
-	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, InterruptedException {
 		ZrpcClient client = new ZrpcClient();
-		client.ZrpcClient("127.0.0.1:8000","com/nio/consumer/consumer.xml");
+		client.StartClient("com/nio/consumer/consumer.xml");
 		
 		//服务的ID和负载均衡策略
 		//HelloService service = (HelloService) Client.refer(HelloService.class);
-		HelloService service = (HelloService) ZrpcClient.getBean("helloService");
+		HelloService service = (HelloService) client.getBean("helloService");
 		
-		String sayHello = service.sayHello("zrp");
-		log.info(sayHello);
-//		User createUser = service.createUser("zhangrp",12);
-//		log.info("返回的user:"+createUser);
+//		String sayHello = service.sayHello("zrp");
+//		log.info(sayHello);
+		User createUser = service.createUser("zhangrp",12);
+		log.info("返回的user:"+createUser);
 		
 	}
 }

@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.nio.zrpc.core.interceptor.ServiceInterceptor;
-import com.nio.zrpc.definition.RpcDefinition;
+import com.nio.zrpc.definition.RpcRequest;
 import com.nio.zrpc.registry.consul.ConsulUtil;
 import com.nio.zrpc.registry.consul.OkHttp3ClientManager;
 import com.nio.zrpc.registry.consul.request.ServiceRequest;
@@ -18,8 +18,8 @@ import com.nio.zrpc.util.StringUtil;
 
 public class ConsulInterceptor implements ServiceInterceptor {
 	private static final Logger log = LoggerFactory.getLogger(ConsulInterceptor.class);
-	private RpcDefinition def;
-	public ConsulInterceptor(RpcDefinition defination){
+	private RpcRequest def;
+	public ConsulInterceptor(RpcRequest defination){
 		this.def=defination;
 	}
 	
@@ -29,7 +29,7 @@ public class ConsulInterceptor implements ServiceInterceptor {
 				.substring(def.getInterfaceName().lastIndexOf(".") + 1));
 		log.info("调用的服务:"+serviceName);
 		//负载均衡策略
-		ServiceRequest request = new ConsulUtil(ZrpcServer.getRegistryAddress()).serviceGet(serviceName,
+		ServiceRequest request = new ConsulUtil(ZrpcServer.getRegistryAddress()).GetService(serviceName,
 				new HashStrategy());
 
 		OkHttp3ClientManager manger = OkHttp3ClientManager.getInstance();

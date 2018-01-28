@@ -1,70 +1,67 @@
 package com.nio.zrpc.client;
 
-import java.io.File;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.net.URL;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
-import org.jboss.netty.handler.codec.string.StringDecoder;
-import org.jboss.netty.handler.codec.string.StringEncoder;
-import org.junit.Test;
+import org.I0Itec.zkclient.ZkClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Controller;
 
-import com.alibaba.fastjson.JSONObject;
-import com.nio.consumer.controller.HelloServiceController;
-import com.nio.zrpc.definition.RpcDefinition;
+import com.nio.zrpc.coder.RpcDecoder;
+import com.nio.zrpc.coder.RpcEncoder;
+import com.nio.zrpc.definition.RpcRequest;
+import com.nio.zrpc.definition.RpcResponse;
 import com.nio.zrpc.hystrix.FallBackDefinition;
 import com.nio.zrpc.hystrix.anno.Command;
+import com.nio.zrpc.registry.zookeeper.ZkConstant;
+import com.nio.zrpc.registry.zookeeper.ZookeeperUtil;
 import com.nio.zrpc.serialization.KryoUtil;
+import com.nio.zrpc.server.ServerHandler;
 import com.nio.zrpc.tag.definition.ReferenceDefinition;
+import com.nio.zrpc.tag.definition.RegistryDefinition;
 import com.nio.zrpc.util.ClassUtil;
 
+import io.netty.bootstrap.Bootstrap;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+
 public class ZrpcClient {
+	
 	private static final Logger log = LoggerFactory.getLogger(ZrpcClient.class);
 	private List<String>  packageName = new ArrayList<String>();
 	private static HashMap<String, Object> fallbackMap = new HashMap<String, Object>();
 	private static volatile ApplicationContext ac;
-	private static Channel channel;
-	// protected static volatile Object result;
+	private static volatile String registryAddress;
 	
-	// protected static Object lock = new Object();
-	volatile static Class returnType;
-
 	public ZrpcClient() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		// 维护一个controller集合
 		// 判断方法上是否有command注解
 		
 		packageName=ClassUtil.searchClass("com.nio.consumer");
 		
-		
 		filterAndInstance();
 	}
 
-	
-
-	@SuppressWarnings({ "unused", "unchecked" })
+	@SuppressWarnings("unchecked")
 	private void filterAndInstance() throws ClassNotFoundException,
 			InstantiationException, IllegalAccessException {
 		if (packageName.size() <= 0) {
@@ -89,38 +86,55 @@ public class ZrpcClient {
 						
 						fallbackMap.put(fallbackType, new FallBackDefinition(className, fallbackMethod));
 					}
-					
-					
 				}
-				
 			}  else {
 				continue;
 			}
 		}
 	}
 
-	public  void ZrpcClient(String add,String path ) {
-		SocketAddress address =new InetSocketAddress(add.split(":")[0], Integer.parseInt(add.split(":")[1]));
+	public  void StartClient(String path ) throws InterruptedException {
+			//需要向注册中心订阅RPC服务,根据返回的服务列表，与具体的Server建立连接进行调用
+		
+			log.info("client start");
+			
+			SpringInit(path);
+	}
 
-		ClientBootstrap clientBootstrap = new ClientBootstrap();
-		ExecutorService boss = Executors.newCachedThreadPool();
-		ExecutorService worker = Executors.newCachedThreadPool();
-		clientBootstrap.setFactory(new NioClientSocketChannelFactory(boss,
-				worker));
-		clientBootstrap.setPipelineFactory(new ChannelPipelineFactory() {
+	private static void NettyInvoke(String add,RpcRequest request) throws InterruptedException {
+		//String host = add.split(":")[0];
+		String host = null;
+		try {
+			host = InetAddress.getLocalHost().getHostAddress().toString();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		//int port = Integer.parseInt(add.split(":")[1]);
+		int port = 8000;
+		EventLoopGroup group = new NioEventLoopGroup();
+		Bootstrap bootstrap = new Bootstrap();
+        bootstrap.group(group).channel(NioSocketChannel.class)
+               .handler(new ChannelInitializer<SocketChannel>() {
+                   @Override
+                   public void initChannel(SocketChannel channel) throws Exception {
+                       channel.pipeline()
+                           .addLast(new RpcEncoder(RpcRequest.class)) // 将 RPC 请求进行编码（为了发送请求）
+                           .addLast(new RpcDecoder(RpcResponse.class)) // 将 RPC 响应进行解码（为了处理响应）
+                           .addLast(new ClientHandler()); // 使用 RpcClient 发送 RPC 请求
+                   }
+               })
+               .option(ChannelOption.SO_KEEPALIVE, true);
 
-			public ChannelPipeline getPipeline() throws Exception {
-				ChannelPipeline pipeline = Channels.pipeline();
-				pipeline.addLast("decoder", new StringDecoder());
-				pipeline.addLast("encoder", new StringEncoder());
-				pipeline.addLast("hiHandler", new ClientHandler());
-				return pipeline;
-			}
-		});
-		ChannelFuture connect = clientBootstrap.connect(address);
-		channel = connect.getChannel();
-		log.info("client start");
-		SpringInit(path);
+           	ChannelFuture future = bootstrap.connect(host, port).sync();
+            Channel channel = future.channel();
+            channel.writeAndFlush(request).sync().addListener(new ChannelFutureListener() {
+	            @Override
+	            public void operationComplete(ChannelFuture future) {
+	            	log.info("消息发送完毕");
+	            }
+	        });
+            
+            future.channel().closeFuture().sync();
 	}
 
 	private void SpringInit(String path) {
@@ -128,37 +142,42 @@ public class ZrpcClient {
 			throw new NullPointerException("配置文件呢??");
 		}
 		ac = new ClassPathXmlApplicationContext(path);
-		
+		RegistryDefinition registryDef = (RegistryDefinition) ac.getBean("registry");
+		setRegistryAddress(registryDef.getAddress());
 	}
 
-	public static Object getBean(String serviceId) throws ClassNotFoundException{
+	public Object getBean(String serviceId) throws ClassNotFoundException{
 		
 		ReferenceDefinition rdf = (ReferenceDefinition) ac.getBean(serviceId);
-		if(rdf==null&&rdf.equals("")){
+		if(rdf==null){
 			throw new NullPointerException("配置文件中没有配置服务名");
 		}
 		rdf.getStrategy();
 		String interfaceName = rdf.getInterfaceName();
-		Class forName =  Class.forName(interfaceName);
+		Class<?> forName =  Class.forName(interfaceName);
 		return refer(forName);
 	
 	}
 
-	@SuppressWarnings("unchecked")
 	public static Object refer(final Class<?> interfaceName) {
 		return  Proxy.newProxyInstance(ZrpcClient.class.getClassLoader(),
 				new Class[] { interfaceName }, new InvocationHandler() {
 
 					public Object invoke(Object proxy, Method method,
 							Object[] arguments) throws Throwable {
-						// 转发请求 交给服务端执行
-						// interface com.nio.service.HelloService
-						//com.nio.service.HelloService
-						String infName = interfaceName.toString()
-								.substring(10);
-						returnType = method.getReturnType();
+						
+						String infName = interfaceName.toString().substring(10);
+						//需要向注册中心订阅RPC服务,根据返回的服务列表，与具体的Server建立连接进行调用
+						ZkClient zkClient = ZookeeperUtil.getInstance();	
+						//future.channel().writeAndFlush(request).sync();
+						String ServiceAddress = zkClient.readData(ZkConstant.ROOT_TAG + "/"
+								+ infName);
+						System.out.println(ServiceAddress);
+						
+						//returnType = method.getReturnType();
 						//发送序列化的数据 加入FallBack机制
 						//只加入fallback方法
+						
 						FallBackDefinition fallback=null;
 						for (Entry<String, Object> entry :fallbackMap.entrySet()) {
 							
@@ -168,26 +187,12 @@ public class ZrpcClient {
 							}
 							
 						}
-						
-						
-						RpcDefinition rpc = new RpcDefinition(infName,
+						RpcRequest request = new RpcRequest(infName,
 								method.getName(), method.getParameterTypes(),
 								arguments,fallback);
-						// TODO 加入其他序列化协议支持(kryo)
-						String jsonString = JSONObject.toJSONString(rpc);
-						
-						String kryoString = KryoUtil.serializationObject(rpc);
-						ChannelFuture future = channel.write(jsonString);
-						future.addListener(new ChannelFutureListener() {
-
-							public void operationComplete(ChannelFuture future)
-									throws Exception {
-								// 消息发送完毕
-								log.info("消息发送完毕");
-
-							}
-
-						});
+					
+						NettyInvoke(ServiceAddress,request);
+					
 						getResultThread getResultThread = new getResultThread();
 						getResultThread.start();
 						Thread.sleep(1000);
@@ -197,41 +202,30 @@ public class ZrpcClient {
 
 	}
 
+	public static String getRegistryAddress() {
+		return registryAddress;
+	}
+
+	public static void setRegistryAddress(String registryAddress) {
+		ZrpcClient.registryAddress = registryAddress;
+	}
+
 }
 
 class getResultThread extends Thread {
 	private static final Logger log = LoggerFactory.getLogger(getResultThread.class);
-	protected static volatile Object result;
+	protected volatile static Object result;
 
 	protected static Object lock = new Object();
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void run() {
 		while (result == null) {
 			synchronized (lock) {
 				try {
 					lock.wait();
-					log.info("得到result:" + result+result.toString()+result.getClass());
-					
-					if (ZrpcClient.returnType == String.class) {
-						
-						return;
-					} else if(result.getClass()==ZrpcClient.returnType){
-						return ;
-					}else{
-						//class com.nio.entity.User
-						log.info("返回类型:" + ZrpcClient.returnType);
-					
-							Object parseObject = JSONObject.parseObject(
-									result.toString(), ZrpcClient.returnType);
-
-							log.info(parseObject.toString());
-							result = parseObject;
-							log.info("get Thread:"
-									+ Thread.currentThread().getName());
-						return;
-					}
+					log.info("得到服务返回结果:" + result);
+					return ;
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

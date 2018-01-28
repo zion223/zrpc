@@ -4,20 +4,19 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.I0Itec.zkclient.ZkClient;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.context.ApplicationContext;
 
+import com.esotericsoftware.minlog.Log;
 import com.nio.zrpc.core.interceptor.ServiceInterceptor;
-import com.nio.zrpc.definition.RpcDefinition;
-import com.nio.zrpc.registry.zookeeper.ZkConstant;
-import com.nio.zrpc.registry.zookeeper.ZookeeperUtil;
+import com.nio.zrpc.definition.RpcRequest;
 import com.nio.zrpc.server.ZrpcServer;
 
 public class ZookeeperInterceptor implements ServiceInterceptor {
 
-	private RpcDefinition def;
+	private RpcRequest def;
 
-	public ZookeeperInterceptor(RpcDefinition def) {
+	public ZookeeperInterceptor(RpcRequest def) {
 		this.def = def;
 	}
 
@@ -33,29 +32,32 @@ public class ZookeeperInterceptor implements ServiceInterceptor {
 	public Object doIntercepptor() throws IOException, ClassNotFoundException,
 			InstantiationException, IllegalAccessException,
 			NoSuchMethodException, SecurityException {
+		//从Spring容器中获取bean
+		ApplicationContext context = ZrpcServer.getApplicationContext();
 		String interfaceName = def.getInterfaceName();
+		Object bean = context.getBean(interfaceName);
 		
-		//ZkClient zkClient = new ZkClient(ZrpcServer.getRegistryAddress());
-		ZkClient zkClient = ZookeeperUtil.getInstance();
 		
-		Object refName = zkClient.readData(ZkConstant.ROOT_TAG + "/"
-				+ interfaceName);
-		zkClient.close();
+		
+		Log.info("调用服务:"+bean);
+		//zkClient.close();
 		//String refName="com.nio.service.impl.HelloServiceImpl";
-		Class<?> refClazz = Class.forName(refName.toString());
+		//Class<?> refClazz = Class.forName(refName.toString());
 		Object[] parameterTypes = def.getParameterTypes();
 
 		//Object refClass = refClazz.newInstance();
 		
-		//从Spring容器中获取bean
-		ApplicationContext context = ZrpcServer.getApplicationContext();
-		Object bean = context.getBean(refName.toString());
+		
+	
+		
+		//Object bean = context.getBean("helloService");
+		
 		Class[] parameterType = new Class[parameterTypes.length];
+		
 		for (int i = 0; i < parameterTypes.length; i++) {
-			parameterType[i] = (Class) Class.forName(parameterTypes[i]
-					.toString());
+			parameterType[i] = (Class) Class.forName(StringUtils.substring(parameterTypes[i].toString(),6));
 		}
-		Method method = refClazz.getDeclaredMethod(def.getMethodName(), parameterType);
+		Method method = ((Class) bean).getDeclaredMethod(def.getMethodName(), parameterType);
 		Object result = null;
 		try {
 			result = method.invoke(bean, def.getArguments());
@@ -66,5 +68,7 @@ public class ZookeeperInterceptor implements ServiceInterceptor {
 		}
 		return result;
 	}
+	
+
 
 }

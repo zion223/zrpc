@@ -1,5 +1,8 @@
 package com.nio.zrpc.registry.zookeeper;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.I0Itec.zkclient.ZkClient;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -13,6 +16,10 @@ public class ZookeeperTest {
 	private static final Logger log = LoggerFactory.getLogger(ZookeeperTest.class);
 	
 	private static final String ROOT_TAG ="/zrpc";
+	@Test
+	public void testAddress() throws UnknownHostException{
+		System.out.println(InetAddress.getLocalHost().getHostAddress().toString());
+	}
 	
 	@Test
 	public void testConn() throws Exception {

@@ -2,11 +2,13 @@ package com.nio.zrpc.tag.definition;
 
 public class ZkServiceDefinition {
 
-	private String id;
 	//接口名
 	private String InterfaceName;
-	//实现类
+	//由Spring实例化的服务实现类Bean
 	private String ref;
+	
+	private String id;
+	
 	public String getId() {
 		return id;
 	}

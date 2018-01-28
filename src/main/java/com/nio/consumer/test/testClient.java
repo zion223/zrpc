@@ -7,15 +7,16 @@ import com.nio.zrpc.client.ZrpcClient;
 
 public class testClient {
 
-	public static void main(String[] args) throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+	public static void main(String[] args) throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, InterruptedException {
 	
 
 		//发送序列化好的对象
 		ZrpcClient client = new ZrpcClient();
-		client.ZrpcClient("127.0.0.1:8000","com/nio/consumer/consumer.xml");
-		HelloService service = (HelloService) ZrpcClient.getBean("helloService");
+		client.StartClient("com/nio/consumer/consumer.xml");
+		HelloService service = (HelloService) client.getBean("helloService");
 		
-		//String sayHello = service.sayHello("zrp");
+//		String sayHello = service.sayHello("zrp");
+//		Log.info(sayHello);
 		User user = service.createUser("zrp", 21);
 		Log.info(user.getName()+user.getAge());
 		

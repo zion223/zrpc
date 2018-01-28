@@ -5,20 +5,22 @@ import java.util.Arrays;
 
 import com.nio.zrpc.hystrix.FallBackDefinition;
 
-public class RpcDefinition implements Serializable{
+public class RpcRequest implements Serializable{
 
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 
 	private String interfaceName;
 
 	private String methodName;
+	
 	private Object[] parameterTypes;
+	
 	private Object[] arguments;
+	
 	private FallBackDefinition def;
-	public RpcDefinition(String interfaceName, String methodName,
+	
+	public RpcRequest(String interfaceName, String methodName,
 			Object[] parameterTypes, Object[] arguments,FallBackDefinition def) {
 		super();
 		this.interfaceName = interfaceName;
@@ -56,7 +58,7 @@ public class RpcDefinition implements Serializable{
 		return interfaceName;
 	}
 
-	public RpcDefinition() {
+	public RpcRequest() {
 		super();
 	}
 

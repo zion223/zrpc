@@ -12,15 +12,15 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixThreadPoolProperties;
 import com.nio.zrpc.core.InvokeService;
-import com.nio.zrpc.definition.RpcDefinition;
+import com.nio.zrpc.definition.RpcRequest;
 
 public class RpcHystrixCommand extends HystrixCommand<Object> {
 	private static final Logger log = LoggerFactory.getLogger(RpcHystrixCommand.class);
 
 	private static final int DEFAULT_THREADPOOL_CORE_SIZE = 30;
-	private final RpcDefinition invoker;
+	private final RpcRequest invoker;
 
-	public RpcHystrixCommand(RpcDefinition invoker) {
+	public RpcHystrixCommand(RpcRequest invoker) {
 		 super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey(invoker.getMethodName()))
 		 .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
 		 .withCircuitBreakerRequestVolumeThreshold(20)//10秒钟内至少19此请求失败，熔断器才发挥起作用
@@ -35,16 +35,16 @@ public class RpcHystrixCommand extends HystrixCommand<Object> {
 	@Override
 	protected Object run() throws Exception {
 		//Object result = null;
-		Object result= InvokeService.invokeService(invoker);
+		Object result= InvokeService.invoke(invoker);
 		if (result == null) {
-			throw new NullPointerException();
+			throw new NullPointerException("调用服务失败");
 		}
 
 		return result;
 	}
 
 	@Override
-	protected String getFallback() {
+	protected Object getFallback() {
 		// 本地方法调用
 		//{"name":"zhangrp","age":13}
 		
@@ -58,8 +58,7 @@ public class RpcHystrixCommand extends HystrixCommand<Object> {
 			// TODO 服务失败调用的方法不可以传参数
 			result = method.invoke(obj, null);
 			log.info("==============fallback========="+result);
-			String jsonString = JSON.toJSONString(result);
-			return jsonString;
+			return result;
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
 			throw new RuntimeException("No fallback available.");

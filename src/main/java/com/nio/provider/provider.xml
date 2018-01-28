@@ -28,11 +28,13 @@
 	<!-- 在配置文件中获取服务相关信息封装后使用consul注册 -->
  	<!-- id name tag address port -->
 	<!--  <zrpc:service  id="helloService" name="HelloService" address="127.0.0.1" port="8082 8081"/>-->
-	<zrpc:zkservice id="helloService" interfaceName="com.nio.service.HelloService" ref="com.nio.service.impl.HelloServiceImpl"/>
-	<zrpc:zkservice id="hiService" interfaceName="com.nio.service.HiService" ref="com.nio.service.impl.HiServiceImpl"/>
+	<bean id="helloImpl" class="com.nio.service.impl.HelloServiceImpl"/>
+	<bean id="hiImpl" class="com.nio.service.impl.HiServiceImpl"/>
+	<zrpc:zkservice   interfaceName="com.nio.service.HelloService" ref="helloImpl"/>
+	<zrpc:zkservice  interfaceName="com.nio.service.HiService" ref="hiImpl"/>
 	
-	<!-- Consul注册地址       id必须为registry -->	
-	<!-- <zrpc:registry id="registry" address="Consul://127.0.0.1:8500"/> -->
-	<zrpc:registry id="registry" address="Zookeeper://192.168.252.144:2181"/>
+	<!-- Consul注册地址      -->	
+	<!--  <zrpc:registry id="registry" address="Consul://127.0.0.1:8500"/>-->
+	<zrpc:registry address="Zookeeper://192.168.252.144:2181"/>
 	                          
 </beans>

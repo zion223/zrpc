@@ -65,10 +65,10 @@ public class ConsulTest {
 		//构造需要注册的服务对象Definition
 	
 		 //更改ID可同时注册多个服务
-		 ServiceRegisterDefinition definition = new ServiceRegisterDefinition("helloService", "HelloService","defaultTag", "127.0.0.1", "8082 8081");
+		 ServiceRegisterDefinition definition = new ServiceRegisterDefinition("helloService", "HelloService","defaultTag", "127.0.0.1", "8082 8081","10s");
 		 ConsulUtil consulUtil = new ConsulUtil("127.0.0.1:8500");
-		 consulUtil.serviceRegister(definition);  
-		
+		 consulUtil.RegisterService(definition);  
+		 
 		
         
     }  
@@ -88,12 +88,13 @@ public class ConsulTest {
 	public void testGet() throws IOException{
 		//根据服务名 找到在注册中心注册的实例  负载均衡
 		ConsulUtil consulUtil = new ConsulUtil("127.0.0.1:8500");
-        ServiceRequest serviceGet = consulUtil.serviceGet("helloService",new HashStrategy());
+        ServiceRequest serviceGet = consulUtil.GetService("helloService",new HashStrategy());
         
        
         //构造服务请求对象 通过OkHttp发送请求
         OkHttp3ClientManager manger = OkHttp3ClientManager.getInstance();
         Map<String,Object> hashMap = new HashMap<String, Object>();
+        // TODO 参数必须固定
         hashMap.put("param0", "zhang");
         hashMap.put("param1", "21");
         User response =manger.getBeanExecute("http:"+serviceGet.getAddress()+":"+serviceGet.getPort()+"/createUser", hashMap, User.class);

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 import com.esotericsoftware.kryo.Kryo;
@@ -15,6 +16,7 @@ import com.esotericsoftware.kryo.serializers.JavaSerializer;
 import com.nio.entity.User;
 
 public class KryoUtil {
+
 	@Test
 	public void testkryo(){
 		
@@ -23,6 +25,7 @@ public class KryoUtil {
 		user.setName("zhangsan");
 		
 		String usermsg = serializationObject(user);
+		System.out.println(usermsg);
 		User user2 = deserializationObject(usermsg, User.class);
 		System.out.println(user2.getName());
 	}

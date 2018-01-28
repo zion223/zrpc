@@ -38,9 +38,10 @@ zrpc是一款简洁易用的分布式服务化治理框架。
 		实例化实现了接口的服务，维护一个map private String interfaceName;  -->
 
 	<!-- 暴露服务接口 -->
-	
+	<bean id="helloImpl" class="com.nio.service.impl.HelloServiceImpl"/>
+	<bean id="hiImpl" class="com.nio.service.impl.HiServiceImpl"/>
 	<!--<zrpc:service  id="helloService" name="HelloService" address="127.0.0.1" port="8082 8081"/>-->	
-	<zrpc:zkservice id="helloService interfaceName="com.nio.service.HelloService" ref="com.nio.service.impl.HelloServiceImpl"/>
+	<zrpc:zkservice id="helloService interfaceName="com.nio.service.HelloService" ref="helloImpl"/>
 	
 	<!-- <zrpc:registry id="registry" address="Consul://127.0.0.1:8500"/> -->	
 	<zrpc:registry  address="Zookeeper://192.168.252.144:2181"/>
@@ -54,7 +55,7 @@ public class TestServer {
 	private static final Logger log = LoggerFactory.getLogger(TestServer.class);
 	public static void main(String[] args) {
 		 //创建服务器    地址和xml文件的路径
-		  Server.ZrpcServer("127.0.0.1:8000","com/nio/provider/zrpc-provider.xml");
+		  Server.StartServer("com/nio/provider/zrpc-provider.xml");
 	}
 }
 
@@ -105,7 +106,7 @@ public class testClient {
 	
 
 		Client client = new Client();
-		client.ZrpcClient(new InetSocketAddress("127.0.0.1",8000),"com/nio/consumer/zrpc-consumer.xml");
+		client.StartClient("com/nio/consumer/zrpc-consumer.xml");
 		
 		//服务的ID和负载均衡策略
 		//HelloService service = (HelloService) Client.refer(HelloService.class);

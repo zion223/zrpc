@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:zrpc="http://www.lexueba.com/schema/zrpc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+ 	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/jee
+	http://www.springframework.org/schema/jee/spring-jee-4.1.xsd
+	http://www.springframework.org/schema/util 
+	http://www.springframework.org/schema/util/spring-util-4.1.xsd
+	http://www.lexueba.com/schema/zrpc
+ 	http://www.lexueba.com/schema/zrpc.xsd">
+
+
+<!-- 
+	<dubbo:application name="dubbodemo-consumer"/>
+	 
+    <dubbo:registry address="zookeeper://localhost:2181"/>
+    
+    <dubbo:protocol port="28080"/>
+    
+    <dubbo:reference id="userService" interface="com.chanshuyi.service.IUserService"/>
+
+ -->
+ 	
+	<zrpc:reference id="helloService" interfaceName="com.nio.service.HelloService" loadbalance="hash"/>
+	<!-- consul 地址127.0.0.1:8500从配置文件中获取 -->
+	<zrpc:registry id="registry" address="Zookeeper://192.168.252.144:2181"/>
+	
+</beans>

@@ -29,6 +29,7 @@
  	
 	<zrpc:reference id="helloService" interfaceName="com.nio.service.HelloService" loadbalance="hash"/>
 	<!-- consul 地址127.0.0.1:8500从配置文件中获取 -->
+	
 	<zrpc:registry id="registry" address="Zookeeper://192.168.252.144:2181"/>
 	
 </beans>

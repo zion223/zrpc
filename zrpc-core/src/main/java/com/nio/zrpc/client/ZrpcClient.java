@@ -3,7 +3,6 @@ package com.nio.zrpc.client;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -94,15 +93,15 @@ public class ZrpcClient implements InitializingBean {
 
     public void StartClient(String path) throws InterruptedException {
         //需要向注册中心订阅RPC服务,根据返回的服务列表，与具体的Server建立连接进行调用
-        SpringInit(path);
+        initSpring(path);
         log.info("client start");
     }
 
-    private static void NettyInvoke(String add, RpcRequest request) throws InterruptedException {
+    private static void invokeNettyRequest(String address, RpcRequest request) throws InterruptedException {
 
         //add = "192.168.100.3:8000"
-        String host = StringUtils.substringBefore(add, ":");
-        int port = Integer.parseInt(StringUtils.substringAfter(add, ":"));
+        String host = StringUtils.substringBefore(address, ":");
+        int port = Integer.parseInt(StringUtils.substringAfter(address, ":"));
 
         EventLoopGroup group = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
@@ -130,7 +129,7 @@ public class ZrpcClient implements InitializingBean {
         future.channel().closeFuture().sync();
     }
 
-    private void SpringInit(String path) {
+    private void initSpring(String path) {
         if (path.equals("")) {
             throw new NullPointerException("配置文件呢??");
         }
@@ -190,7 +189,7 @@ public class ZrpcClient implements InitializingBean {
                                 method.getName(), method.getParameterTypes(),
                                 arguments, fallback);
 
-                        NettyInvoke(Serviceinstance, request);
+                        invokeNettyRequest(Serviceinstance, request);
 
                         getResultThread getResultThread = new getResultThread();
                         getResultThread.start();
@@ -217,10 +216,10 @@ public class ZrpcClient implements InitializingBean {
 }
 
 class getResultThread extends Thread {
-	private static final Logger log = LoggerFactory.getLogger(getResultThread.class);
-	protected volatile static Object result;
+    private static final Logger log = LoggerFactory.getLogger(getResultThread.class);
+    protected volatile static Object result;
 
-	protected static Object lock = new Object();
+    protected static Object lock = new Object();
 
     @Override
     public void run() {

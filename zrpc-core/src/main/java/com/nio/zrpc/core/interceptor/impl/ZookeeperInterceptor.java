@@ -15,19 +15,14 @@ import com.nio.zrpc.tag.definition.ZkServiceDefinition;
 
 public class ZookeeperInterceptor implements ServiceInterceptor {
 
-	private RpcRequest def;
+	private RpcRequest request;
 
-	public ZookeeperInterceptor(RpcRequest def) {
-		this.def = def;
+	public ZookeeperInterceptor(RpcRequest request) {
+		this.request = request;
 	}
 
 	/**
-	 * @category 从zookeeper中根据接口名找到实现类构造实现类,调用方法,返回结果
-	 * @throws ClassNotFoundException
-	 * @throws IllegalAccessException
-	 * @throws InstantiationException
-	 * @throws SecurityException
-	 * @throws NoSuchMethodException
+	 * @category 从zookeeper中根据接口名找到实现类构造实现类, 调用方法, 返回结果
 	 */
 	@Override
 	public Object doIntercepptor() throws IOException, ClassNotFoundException,
@@ -35,34 +30,35 @@ public class ZookeeperInterceptor implements ServiceInterceptor {
 			NoSuchMethodException, SecurityException {
 		//从Spring容器中获取bean
 		ApplicationContext context = ZrpcServer.getApplicationContext();
-		String interfaceName = def.getInterfaceName();
-		ZkServiceDefinition zkd = (ZkServiceDefinition)context.getBean(interfaceName);
+		String interfaceName = request.getInterfaceName();
+		ZkServiceDefinition zkd = (ZkServiceDefinition) context.getBean(interfaceName);
+		//查找实现类
 		Object bean = context.getBean(zkd.getRef());
-		
-		
-		Log.info("调用服务:"+bean);
+
+		Log.info("调用服务:" + bean);
 		//zkClient.close();
 		//String refName="com.nio.service.impl.HelloServiceImpl";
 		//Class<?> refClazz = Class.forName(refName.toString());
-		Object[] parameterTypes = def.getParameterTypes();
-		
+		Object[] parameterTypes = request.getParameterTypes();
+
 		Class[] parameterType = new Class[parameterTypes.length];
-		
+
 		for (int i = 0; i < parameterTypes.length; i++) {
-			parameterType[i] = (Class) Class.forName(StringUtils.substring(parameterTypes[i].toString(),6));
+			parameterType[i] = Class.forName(StringUtils.substring(parameterTypes[i].toString(), 6));
 		}
 		Class<?> clazz = Class.forName(interfaceName);
-		
-		Method method = clazz.getDeclaredMethod(def.getMethodName(), parameterType);
+
+		//获取类的方法
+		Method method = clazz.getDeclaredMethod(request.getMethodName(), parameterType);
 		Object result = null;
 		try {
-			result = method.invoke(bean, def.getArguments());
+			//调用方法
+			result = method.invoke(bean, request.getArguments());
 		} catch (IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
 		return result;
 	}
-	
 
 
 }

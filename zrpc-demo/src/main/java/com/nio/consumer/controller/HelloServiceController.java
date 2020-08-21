@@ -1,12 +1,9 @@
 package com.nio.consumer.controller;
 
-
 import com.nio.entity.User;
 import com.nio.service.HelloService;
 import com.nio.zrpc.client.ZrpcClient;
 import com.nio.zrpc.hystrix.anno.Command;
-//import com.sun.org.slf4j.internal.Logger;
-//import com.sun.org.slf4j.internal.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 

@@ -22,7 +22,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
         RpcResponse response = new RpcResponse();
 
         RpcHystrixCommand rpcHystrixCommand = new RpcHystrixCommand(request);
-
+        //执行run方法
         Object result = rpcHystrixCommand.execute();
         response.setRequestId("requestId");
         response.setResult(result);

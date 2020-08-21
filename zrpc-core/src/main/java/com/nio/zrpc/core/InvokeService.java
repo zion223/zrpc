@@ -3,6 +3,7 @@ package com.nio.zrpc.core;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
+import com.nio.zrpc.registry.RegistryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,21 +24,7 @@ public class InvokeService {
             SecurityException, IllegalAccessException,
             IllegalArgumentException, InvocationTargetException, IOException, InstantiationException {
 
-
-        Object response = null;
-        //判断请求处理的方式
-        if (ZrpcServer.registryFlag) {
-
-            //使用Consul处理请求
-            response = new ConsulInterceptor(definition).doIntercepptor();
-        } else {
-            //使用zk处理请求
-            response = new ZookeeperInterceptor(definition).doIntercepptor();
-        }
-
-        return response;
-
+        return ZrpcServer.registryFlag.getValue() == RegistryType.CONSULE_ID ? new ConsulInterceptor(definition).doIntercepptor() : new ZookeeperInterceptor(definition).doIntercepptor();
     }
-
 
 }

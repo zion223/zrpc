@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.nio.zrpc.registry.RegistryType;
 import org.I0Itec.zkclient.ZkClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +40,7 @@ public class ZrpcServer implements InitializingBean {
 	/**
 	 * flag=true 为consul注册 flag=false 为zookeeper注册
 	 */
-	public static volatile boolean registryFlag;
+	public static volatile RegistryType registryFlag;
 	public static ApplicationContext ac;
 
 	private static volatile int port;
@@ -51,7 +52,7 @@ public class ZrpcServer implements InitializingBean {
 	public static List<ZkServiceRegisterDefinition> ZkserviceList = new ArrayList<ZkServiceRegisterDefinition>();
 
 	public static void StartServer(String path) throws InterruptedException, UnknownHostException {
-		SpringInit(path);
+		initSpring(path);
 		String host = InetAddress.getLocalHost().getHostAddress().toString();
 
 
@@ -89,7 +90,7 @@ public class ZrpcServer implements InitializingBean {
 	 * @param path
 	 * @throws UnknownHostException
 	 */
-	private static void SpringInit(String path) throws UnknownHostException {
+	private static void initSpring(String path) throws UnknownHostException {
 
 		ac = new ClassPathXmlApplicationContext(path);
 		RegistryDefinition registryDef = (RegistryDefinition) ac.getBean("registry");
@@ -97,10 +98,10 @@ public class ZrpcServer implements InitializingBean {
 		registryAddress = registryDef.getAddress();
 		// 判断是consul还是zookeeper
 		if (registryDef.getName().equals("Consul")) {
-			registryFlag = true;
+			registryFlag = RegistryType.CONSUL;
 			ConsulRegister();
 		} else if (registryDef.getName().equals("Zookeeper")) {
-			registryFlag = false;
+			registryFlag = RegistryType.ZOOKEEPER;
 			// zk注册
 			ZookeeperRegister();
 		} else {

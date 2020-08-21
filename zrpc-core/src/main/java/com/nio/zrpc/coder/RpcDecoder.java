@@ -9,17 +9,17 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
-public class RpcDecoder extends ByteToMessageDecoder{
+public class RpcDecoder extends ByteToMessageDecoder {
 
-	private Class<?> genericClass;
+    private Class<?> genericClass;
 
     public RpcDecoder(Class<?> genericClass) {
         this.genericClass = genericClass;
     }
-    
-	@Override
-	protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-		if (in.readableBytes() < 4) {
+
+    @Override
+    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+        if (in.readableBytes() < 4) {
             return;
         }
         in.markReaderIndex();
@@ -36,7 +36,7 @@ public class RpcDecoder extends ByteToMessageDecoder{
 
         Object obj = SerializationUtil.deserialize(data, genericClass);
         out.add(obj);
-		
-	}
+
+    }
 
 }

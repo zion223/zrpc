@@ -5,73 +5,74 @@ import java.util.Arrays;
 
 import com.nio.zrpc.hystrix.FallBackDefinition;
 
-public class RpcRequest implements Serializable{
+public class RpcRequest implements Serializable {
 
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String interfaceName;
+    private String interfaceName;
 
-	private String methodName;
-	
-	private Object[] parameterTypes;
-	
-	private Object[] arguments;
-	
-	private FallBackDefinition def;
-	
-	public RpcRequest(String interfaceName, String methodName,
-			Object[] parameterTypes, Object[] arguments,FallBackDefinition def) {
-		super();
-		this.interfaceName = interfaceName;
-		this.methodName = methodName;
-		this.parameterTypes = parameterTypes;
-		this.arguments = arguments;
-		this.def=def;
-	}
+    private String methodName;
 
-	public FallBackDefinition getDef() {
-		return def;
-	}
+    private Object[] parameterTypes;
 
-	public void setDef(FallBackDefinition def) {
-		this.def = def;
-	}
+    private Object[] arguments;
 
-	public Object[] getParameterTypes() {
-		return parameterTypes;
-	}
+    private FallBackDefinition def;
 
-	public void setParameterTypes(Object[] parameterTypes) {
-		this.parameterTypes = parameterTypes;
-	}
+    public RpcRequest(String interfaceName, String methodName,
+                      Object[] parameterTypes, Object[] arguments, FallBackDefinition def) {
+        super();
+        this.interfaceName = interfaceName;
+        this.methodName = methodName;
+        this.parameterTypes = parameterTypes;
+        this.arguments = arguments;
+        this.def = def;
+    }
 
-	public Object[] getArguments() {
-		return arguments;
-	}
+    public FallBackDefinition getDef() {
+        return def;
+    }
 
-	public void setArguments(Object[] arguments) {
-		this.arguments = arguments;
-	}
-	public String getInterfaceName() {
+    public void setDef(FallBackDefinition def) {
+        this.def = def;
+    }
 
-		return interfaceName;
-	}
+    public Object[] getParameterTypes() {
+        return parameterTypes;
+    }
 
-	public RpcRequest() {
-		super();
-	}
+    public void setParameterTypes(Object[] parameterTypes) {
+        this.parameterTypes = parameterTypes;
+    }
 
-	public void setInterfaceName(String interfaceName) {
-		this.interfaceName = interfaceName;
-	}
+    public Object[] getArguments() {
+        return arguments;
+    }
 
-	public String getMethodName() {
-		return methodName;
-	}
+    public void setArguments(Object[] arguments) {
+        this.arguments = arguments;
+    }
 
-	public void setMethodName(String methodName) {
-		this.methodName = methodName;
-	}
+    public String getInterfaceName() {
+
+        return interfaceName;
+    }
+
+    public RpcRequest() {
+        super();
+    }
+
+    public void setInterfaceName(String interfaceName) {
+        this.interfaceName = interfaceName;
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
+    }
 
 }

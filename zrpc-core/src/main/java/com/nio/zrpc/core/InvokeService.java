@@ -12,33 +12,32 @@ import com.nio.zrpc.definition.RpcRequest;
 import com.nio.zrpc.server.ZrpcServer;
 
 public class InvokeService {
-	
-	private static final Logger log = LoggerFactory.getLogger(InvokeService.class);
 
-	// 维护一个服务实例Map
-	//public static ConcurrentHashMap<String, Object> services = new ConcurrentHashMap<String, Object>();
+    private static final Logger log = LoggerFactory.getLogger(InvokeService.class);
 
-	public static Object invoke(RpcRequest definition)
-			throws ClassNotFoundException, NoSuchMethodException,
-			SecurityException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, IOException, InstantiationException {
+    // 维护一个服务实例Map
+    //public static ConcurrentHashMap<String, Object> services = new ConcurrentHashMap<String, Object>();
 
-		
-		Object response = null;
-		//判断请求处理的方式
-		if(ZrpcServer.registryFlag){
-			
-			//使用Consul处理请求
-			response= new ConsulInterceptor(definition).doIntercepptor();
-		}else{
-			//使用zk处理请求
-			response = new ZookeeperInterceptor(definition).doIntercepptor();
-		}
-		
-		return response;
+    public static Object invoke(RpcRequest definition)
+            throws ClassNotFoundException, NoSuchMethodException,
+            SecurityException, IllegalAccessException,
+            IllegalArgumentException, InvocationTargetException, IOException, InstantiationException {
 
-	}
 
-	
+        Object response = null;
+        //判断请求处理的方式
+        if (ZrpcServer.registryFlag) {
+
+            //使用Consul处理请求
+            response = new ConsulInterceptor(definition).doIntercepptor();
+        } else {
+            //使用zk处理请求
+            response = new ZookeeperInterceptor(definition).doIntercepptor();
+        }
+
+        return response;
+
+    }
+
 
 }

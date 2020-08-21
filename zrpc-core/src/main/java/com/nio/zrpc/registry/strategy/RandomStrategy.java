@@ -10,8 +10,7 @@ public class RandomStrategy implements LoadBalanceStrategy {
 
 		Random random = new Random();
 		int randomPos = random.nextInt(keyList.size());
-		String server = keyList.get(randomPos);
-		return server;
+        return keyList.get(randomPos);
 	}
 
 }

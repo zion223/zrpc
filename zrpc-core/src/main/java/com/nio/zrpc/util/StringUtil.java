@@ -7,9 +7,8 @@ public class StringUtil {
 		if (Character.isLowerCase(s.charAt(0)))
 			return s;
 		else
-			return (new StringBuilder())
-					.append(Character.toLowerCase(s.charAt(0)))
-					.append(s.substring(1)).toString();
+			return Character.toLowerCase(s.charAt(0)) +
+					s.substring(1);
 	}
 	  public static String trimURI(String uri) {
 	        String trimmed = uri.substring(1);

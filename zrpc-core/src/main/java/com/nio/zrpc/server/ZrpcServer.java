@@ -42,8 +42,8 @@ public class ZrpcServer implements InitializingBean {
 	public static volatile boolean registryFlag;
 	public static ApplicationContext ac;
 
-	private static volatile int   port;
-	
+	private static volatile int port;
+
 
 	// consul的注册信息
 	public static List<ServiceRegisterDefinition> ConserviceList = new ArrayList<ServiceRegisterDefinition>();
@@ -53,38 +53,39 @@ public class ZrpcServer implements InitializingBean {
 	public static void StartServer(String path) throws InterruptedException, UnknownHostException {
 		SpringInit(path);
 		String host = InetAddress.getLocalHost().getHostAddress().toString();
-	
-		
-		 EventLoopGroup bossGroup = new NioEventLoopGroup();
-	     EventLoopGroup workerGroup = new NioEventLoopGroup();
-	        try {
-	            ServerBootstrap bootstrap = new ServerBootstrap();
-	            bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
-	                .childHandler(new ChannelInitializer<SocketChannel>() {
-	                    @Override
-	                    public void initChannel(SocketChannel channel) throws Exception {
-	                        channel.pipeline()
-	                            .addLast(new RpcDecoder(RpcRequest.class)) // 将 RPC 请求进行解码（为了处理请求）
-	                            .addLast(new RpcEncoder(RpcResponse.class)) // 将 RPC 响应进行编码（为了返回响应）
-	                            .addLast(new ServerHandler()); // 处理 RPC 请求
-	                    }
-	                })
-	                .option(ChannelOption.SO_BACKLOG, 128)
-	                .childOption(ChannelOption.SO_KEEPALIVE, true);
-	            
-	    ChannelFuture future = bootstrap.bind(host, port).sync();
-		log.info("Server start on port {} "+port);
-		// 获取Spring容器
-	
-		future.channel().closeFuture().sync();
-	 } finally {
-         workerGroup.shutdownGracefully();
-         bossGroup.shutdownGracefully();
-     }
+
+
+		EventLoopGroup bossGroup = new NioEventLoopGroup();
+		EventLoopGroup workerGroup = new NioEventLoopGroup();
+		try {
+			ServerBootstrap bootstrap = new ServerBootstrap();
+			bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
+					.childHandler(new ChannelInitializer<SocketChannel>() {
+						@Override
+						public void initChannel(SocketChannel channel) throws Exception {
+							channel.pipeline()
+									.addLast(new RpcDecoder(RpcRequest.class)) // 将 RPC 请求进行解码（为了处理请求）
+									.addLast(new RpcEncoder(RpcResponse.class)) // 将 RPC 响应进行编码（为了返回响应）
+									.addLast(new ServerHandler()); // 处理 RPC 请求
+						}
+					})
+					.option(ChannelOption.SO_BACKLOG, 128)
+					.childOption(ChannelOption.SO_KEEPALIVE, true);
+
+			ChannelFuture future = bootstrap.bind(host, port).sync();
+			log.info("Server start on port {} " + port);
+			// 获取Spring容器
+
+			future.channel().closeFuture().sync();
+		} finally {
+			workerGroup.shutdownGracefully();
+			bossGroup.shutdownGracefully();
+		}
 	}
 
 	/**
 	 * Spring容器初始化
+	 *
 	 * @param path
 	 * @throws UnknownHostException
 	 */
@@ -110,29 +111,30 @@ public class ZrpcServer implements InitializingBean {
 
 	/**
 	 * 在Zookeeper中注册服务
-	 * @throws UnknownHostException 
+	 *
+	 * @throws UnknownHostException
 	 */
 	private static void ZookeeperRegister() throws UnknownHostException {
 
 		ZkClient zkClient = ZookeeperUtil.getInstance();
-	
-		try{
+
+		try {
 			zkClient.createPersistent(ZkConstant.ROOT_TAG);
-		}catch (Exception e) {
-			log.info("Zookeeper中已经存在 "+ZkConstant.ROOT_TAG+"节点");
+		} catch (Exception e) {
+			log.info("Zookeeper中已经存在 " + ZkConstant.ROOT_TAG + "节点");
 		}
 
 		for (ZkServiceRegisterDefinition zsl : ZkserviceList) {
-			port=Integer.parseInt(zsl.getPort());
-			log.info("在Zookeeper中注册的接口名称" + zsl.getInterfaceName() +"==="+ "服务的地址:" + InetAddress.getLocalHost().getHostAddress().toString()+":"+zsl.getPort());
-		
+			port = Integer.parseInt(zsl.getPort());
+			log.info("在Zookeeper中注册的接口名称" + zsl.getInterfaceName() + "===" + "服务的地址:" + InetAddress.getLocalHost().getHostAddress() + ":" + zsl.getPort());
+
 			try {
-				zkClient.createPersistent(ZkConstant.ROOT_TAG + "/" + zsl.getInterfaceName(),"");
-				zkClient.createPersistent(ZkConstant.ROOT_TAG + "/" + zsl.getInterfaceName()+ZkConstant.PROVIDER_TAG,"");
+				zkClient.createPersistent(ZkConstant.ROOT_TAG + "/" + zsl.getInterfaceName(), "");
+				zkClient.createPersistent(ZkConstant.ROOT_TAG + "/" + zsl.getInterfaceName() + ZkConstant.PROVIDER_TAG, "");
 			} catch (Exception e) {
-				log.info("Zookeeper中已经存在 "+ZkConstant.ROOT_TAG + "/" + zsl.getInterfaceName()+"节点");
+				log.info("Zookeeper中已经存在 " + ZkConstant.ROOT_TAG + "/" + zsl.getInterfaceName() + "节点");
 			}
-			zkClient.createPersistent(ZkConstant.ROOT_TAG + "/" +zsl.getInterfaceName()+ZkConstant.PROVIDER_TAG+"/"+InetAddress.getLocalHost().getHostAddress().toString()+":"+zsl.getPort());
+			zkClient.createPersistent(ZkConstant.ROOT_TAG + "/" + zsl.getInterfaceName() + ZkConstant.PROVIDER_TAG + "/" + InetAddress.getLocalHost().getHostAddress() + ":" + zsl.getPort());
 		}
 
 	}
@@ -165,7 +167,7 @@ public class ZrpcServer implements InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		
+
 
 	}
 }

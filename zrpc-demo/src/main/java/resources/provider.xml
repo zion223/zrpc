@@ -32,9 +32,9 @@
 	<bean id="hiImpl" class="com.nio.provider.service.impl.HiServiceImpl"/>
 	<zrpc:zkservice  interfaceName="com.nio.service.HelloService" ref="helloImpl" port="8080"/>
 	<!-- <zrpc:zkservice  interfaceName="com.nio.service.HiService" ref="hiImpl" port="8080"/> -->
-	
+
 	<!-- Consul注册地址      -->	
 	<!--  <zrpc:registry id="registry" address="Consul://127.0.0.1:8500"/>-->
-	<zrpc:registry address="Zookeeper://192.168.252.144:2181"/>
-	                          
+	<zrpc:registry address="Zookeeper://192.168.1.54:2181"/>
+
 </beans>

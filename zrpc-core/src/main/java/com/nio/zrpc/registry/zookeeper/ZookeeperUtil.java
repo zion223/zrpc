@@ -1,9 +1,6 @@
 package com.nio.zrpc.registry.zookeeper;
 
 import org.I0Itec.zkclient.ZkClient;
-import org.apache.commons.lang.StringUtils;
-
-
 
 public class ZookeeperUtil {
 
@@ -11,10 +8,10 @@ public class ZookeeperUtil {
 	private ZookeeperUtil( ) {}  
 
     //静态工厂方法   
-    public static ZkClient getInstance() {  
-         if (zkClient == null) {  
-        	 //TODO ZK服务器地址
-        	 zkClient = new ZkClient("192.168.252.144:2181");  
+    public static ZkClient getInstance() {
+        if (zkClient == null) {
+            //TODO ZK服务器地址  只能在这配置吗
+            zkClient = new ZkClient("192.168.1.54:2181");
          }    
         return zkClient;  
     }  

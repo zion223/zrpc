@@ -57,9 +57,7 @@ public class ZookeeperInterceptor implements ServiceInterceptor {
 		Object result = null;
 		try {
 			result = method.invoke(bean, def.getArguments());
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
+		} catch (IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
 		return result;

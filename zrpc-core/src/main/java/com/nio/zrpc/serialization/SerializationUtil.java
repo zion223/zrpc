@@ -12,7 +12,7 @@ import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
 
 public class SerializationUtil {
-	private static Map<Class<?>, Schema<?>> cachedSchema = new ConcurrentHashMap<>();
+    private static Map<Class<?>, Schema<?>> cachedSchema = new ConcurrentHashMap<>();
 
     private static Objenesis objenesis = new ObjenesisStd(true);
 
@@ -55,5 +55,5 @@ public class SerializationUtil {
             throw new IllegalStateException(e.getMessage(), e);
         }
     }
-	 	
+
 }

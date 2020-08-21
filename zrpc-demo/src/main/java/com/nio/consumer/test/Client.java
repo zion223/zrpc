@@ -12,12 +12,13 @@ public class Client {
 
 		//发送序列化好的对象
 		ZrpcClient client = new ZrpcClient();
-		client.StartClient("com/nio/consumer/consumer.xml");
+		client.StartClient("consumer.xml");
 		HelloService service = (HelloService) client.getBean("helloService");
 		
 //		String sayHello = service.sayHello("zrp");
 //		Log.info(sayHello);
 		User user = service.createUser("zrp", 21);
+		System.out.println(" user.getName" + user.getName());
 		Log.info(user.getName()+user.getAge());
 		
 	}

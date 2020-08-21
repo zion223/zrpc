@@ -6,13 +6,12 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
-import org.junit.Test;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.JavaSerializer;
+import org.junit.jupiter.api.Test;
 
 public class KryoUtil {
 

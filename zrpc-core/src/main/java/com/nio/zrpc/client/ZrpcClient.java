@@ -86,8 +86,6 @@ public class ZrpcClient implements InitializingBean {
                         fallbackMap.put(fallbackType, new FallBackDefinition(className, fallbackMethod));
                     }
                 }
-            } else {
-                continue;
             }
         }
     }
@@ -133,9 +131,9 @@ public class ZrpcClient implements InitializingBean {
         setRegistryAddress(registryDef.getAddress());
     }
 
-    public Object getBean(String serviceId) throws ClassNotFoundException {
+    public Object getBean(String serviceName) throws ClassNotFoundException {
 
-        ReferenceDefinition rdf = (ReferenceDefinition) ac.getBean(serviceId);
+        ReferenceDefinition rdf = (ReferenceDefinition) ac.getBean(serviceName);
         if (rdf == null) {
             throw new NullPointerException("配置文件中没有配置服务名");
         }
@@ -145,7 +143,7 @@ public class ZrpcClient implements InitializingBean {
         return refer(forName, strategy);
     }
 
-    public static Object refer(final Class<?> interfaceName, final String strategy) {
+    private static Object refer(final Class<?> interfaceName, final String strategy) {
         return Proxy.newProxyInstance(ZrpcClient.class.getClassLoader(),
                 new Class[]{interfaceName}, new InvocationHandler() {
 

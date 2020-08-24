@@ -47,14 +47,13 @@ public class ZrpcServer implements InitializingBean {
 
 
 	// consul的注册信息
-	public static List<ServiceRegisterDefinition> ConserviceList = new ArrayList<ServiceRegisterDefinition>();
+	public static List<ServiceRegisterDefinition> ConserviceList = new ArrayList<>();
 	// zookeeper的注册信息
-	public static List<ZkServiceRegisterDefinition> ZkserviceList = new ArrayList<ZkServiceRegisterDefinition>();
+	public static List<ZkServiceRegisterDefinition> ZkserviceList = new ArrayList<>();
 
 	public static void startServer(String path) throws InterruptedException, UnknownHostException {
 		initSpring(path);
-		String host = InetAddress.getLocalHost().getHostAddress().toString();
-
+		String host = InetAddress.getLocalHost().getHostAddress();
 
 		EventLoopGroup bossGroup = new NioEventLoopGroup();
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -74,8 +73,7 @@ public class ZrpcServer implements InitializingBean {
 					.childOption(ChannelOption.SO_KEEPALIVE, true);
 
 			ChannelFuture future = bootstrap.bind(host, port).sync();
-			log.info("Server start on port {} " + port);
-			// 获取Spring容器
+			log.info("Netty Server start on port : {} ", port);
 
 			future.channel().closeFuture().sync();
 		} finally {

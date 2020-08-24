@@ -6,8 +6,8 @@ import java.util.List;
 
 
 public class ClassUtil {
-	private static List<String> classPaths = new ArrayList<String>();
-	private static List<String> packageName = new ArrayList<String>();
+	private static final List<String> classPaths = new ArrayList<String>();
+	private static final List<String> packageName = new ArrayList<String>();
 
 	public static List<String> searchClass(String basePack)
 			throws ClassNotFoundException {

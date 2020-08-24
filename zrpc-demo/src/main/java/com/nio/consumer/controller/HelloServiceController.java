@@ -29,10 +29,9 @@ public class HelloServiceController {
     public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, InterruptedException {
         ZrpcClient client = new ZrpcClient("consumer.xml");
 
-        //服务的ID和负载均衡策略
+        //服务的名称和负载均衡策略
         //HelloService service = (HelloService) Client.refer(HelloService.class);
         HelloService service = (HelloService) client.getBean("helloService");
-
         User createUser = service.createUser("小明", 12);
 
         log.info("远程访问返回的user:" + createUser.toString());

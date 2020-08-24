@@ -54,7 +54,7 @@ public class ConsulUtil {
 
     }
 
-    public ServiceRequest GetService(String name, LoadBalanceStrategy strategy) {
+    public ServiceRequest getService(String name, LoadBalanceStrategy strategy) {
         HealthClient client = consul.healthClient();
         @SuppressWarnings("rawtypes")
         ConsulResponse object = client.getAllServiceInstances(name);

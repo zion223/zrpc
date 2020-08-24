@@ -51,7 +51,7 @@ public class ZrpcServer implements InitializingBean {
 	// zookeeper的注册信息
 	public static List<ZkServiceRegisterDefinition> ZkserviceList = new ArrayList<ZkServiceRegisterDefinition>();
 
-	public static void StartServer(String path) throws InterruptedException, UnknownHostException {
+	public static void startServer(String path) throws InterruptedException, UnknownHostException {
 		initSpring(path);
 		String host = InetAddress.getLocalHost().getHostAddress().toString();
 
@@ -97,13 +97,13 @@ public class ZrpcServer implements InitializingBean {
 		log.info("注册中心为:" + registryDef.getName());
 		registryAddress = registryDef.getAddress();
 		// 判断是consul还是zookeeper
-		if (registryDef.getName().equals("Consul")) {
+		if (registryDef.getName().equals(RegistryType.CONSUL.getKey())) {
 			registryFlag = RegistryType.CONSUL;
-			ConsulRegister();
-		} else if (registryDef.getName().equals("Zookeeper")) {
+			registerConsul();
+		} else if (registryDef.getName().equals(RegistryType.ZOOKEEPER.getKey())) {
 			registryFlag = RegistryType.ZOOKEEPER;
 			// zk注册
-			ZookeeperRegister();
+			registerZookeeper();
 		} else {
 			throw new IllegalArgumentException("没有这个注册中心呦");
 		}
@@ -115,10 +115,10 @@ public class ZrpcServer implements InitializingBean {
 	 *
 	 * @throws UnknownHostException
 	 */
-	private static void ZookeeperRegister() throws UnknownHostException {
+	private static void registerZookeeper() throws UnknownHostException {
 
-		ZkClient zkClient = ZookeeperUtil.getInstance();
-
+		ZkClient zkClient = ZookeeperUtil.getInstance(getRegistryAddress());
+		zkClient.deleteRecursive(ZkConstant.ROOT_TAG);
 		try {
 			zkClient.createPersistent(ZkConstant.ROOT_TAG);
 		} catch (Exception e) {
@@ -136,6 +136,7 @@ public class ZrpcServer implements InitializingBean {
 				log.info("Zookeeper中已经存在 " + ZkConstant.ROOT_TAG + "/" + zsl.getInterfaceName() + "节点");
 			}
 			zkClient.createPersistent(ZkConstant.ROOT_TAG + "/" + zsl.getInterfaceName() + ZkConstant.PROVIDER_TAG + "/" + InetAddress.getLocalHost().getHostAddress() + ":" + zsl.getPort());
+			zkClient.close();
 		}
 
 	}
@@ -143,7 +144,7 @@ public class ZrpcServer implements InitializingBean {
 	/**
 	 * 在Consul中注册服务
 	 */
-	private static void ConsulRegister() {
+	private static void registerConsul() {
 
 		ConsulUtil consulUtil = new ConsulUtil(registryAddress);
 		// 注册服务到Consul上

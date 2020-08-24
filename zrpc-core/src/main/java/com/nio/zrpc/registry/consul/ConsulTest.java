@@ -90,7 +90,7 @@ public class ConsulTest {
 	public void testGet() throws IOException {
 		//根据服务名 找到在注册中心注册的实例  负载均衡
 		ConsulUtil consulUtil = new ConsulUtil("127.0.0.1:8500");
-		ServiceRequest serviceGet = consulUtil.GetService("helloService", new HashStrategy());
+		ServiceRequest serviceGet = consulUtil.getService("helloService", new HashStrategy());
 
 
         //构造服务请求对象 通过OkHttp发送请求

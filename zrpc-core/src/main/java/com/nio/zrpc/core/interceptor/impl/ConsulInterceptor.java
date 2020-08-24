@@ -30,7 +30,7 @@ public class ConsulInterceptor implements ServiceInterceptor {
                 .substring(def.getInterfaceName().lastIndexOf(".") + 1));
         log.info("调用的服务:" + serviceName);
         //负载均衡策略
-        ServiceRequest request = new ConsulUtil(ZrpcServer.getRegistryAddress()).GetService(serviceName,
+        ServiceRequest request = new ConsulUtil(ZrpcServer.getRegistryAddress()).getService(serviceName,
                 new HashStrategy());
 
         OkHttp3ClientManager manger = OkHttp3ClientManager.getInstance();

@@ -34,6 +34,7 @@ public class HelloServiceController {
         HelloService service = (HelloService) client.getBean("helloService");
 
         User createUser = service.createUser("小明", 12);
-        log.debug("远程访问返回的user:" + createUser.toString());
+
+        log.info("远程访问返回的user:" + createUser.toString());
     }
 }

@@ -61,7 +61,6 @@ public class ZrpcClient implements InitializingBean {
         filterAndInstance();
     }
 
-    @SuppressWarnings("unchecked")
     private void filterAndInstance() throws ClassNotFoundException,
             InstantiationException, IllegalAccessException {
         if (packageName.size() <= 0) {
@@ -156,7 +155,7 @@ public class ZrpcClient implements InitializingBean {
 
                         String infName = interfaceName.toString().substring(10);
                         //需要向注册中心订阅RPC服务,根据返回的服务列表，与具体的Server建立连接进行调用
-                        ZkClient zkClient = ZookeeperUtil.getInstance();
+                        ZkClient zkClient = ZookeeperUtil.getInstance(getRegistryAddress());
                         try {
                             zkClient.createPersistent(ZkConstant.ROOT_TAG);
                         } catch (Exception e) {
@@ -165,18 +164,18 @@ public class ZrpcClient implements InitializingBean {
                         // 创建消费者节点
 
                         //zkClient.createPersistent(ZkConstant.ROOT_TAG + "/"+ infName + ZkConstant.CONSUMER_TAG + "/"+InetAddress.getLocalHost().getHostAddress().toString());
-                        List<String> ServiceAddress = zkClient.getChildren(ZkConstant.ROOT_TAG + "/"
+                        List<String> serviceAddress = zkClient.getChildren(ZkConstant.ROOT_TAG + "/"
                                 + infName + ZkConstant.PROVIDER_TAG);
-
-                        String Serviceinstance = FindLoadBalanceStrategy.getStrategyByName(strategy).getInstance(ServiceAddress);
+                        zkClient.close();
+                        String serviceinstance = FindLoadBalanceStrategy.getStrategyByName(strategy).getInstance(serviceAddress);
                         //returnType = method.getReturnType();
                         //发送序列化的数据 加入FallBack机制
                         //只加入fallback方法
-                        log.info("服务调用的地址:" + Serviceinstance);
+                        log.info("服务调用的地址: " + serviceinstance);
                         FallBackDefinition fallback = null;
                         for (Entry<String, Object> entry : fallbackMap.entrySet()) {
 
-                            if (infName.equals(entry.getKey().toString())) {
+                            if (infName.equals(entry.getKey())) {
                                 //需要使用Hystrix
                                 fallback = (FallBackDefinition) entry.getValue();
                             }
@@ -185,7 +184,7 @@ public class ZrpcClient implements InitializingBean {
                                 method.getName(), method.getParameterTypes(),
                                 arguments, fallback);
 
-                        invokeNettyRequest(Serviceinstance, request);
+                        invokeNettyRequest(serviceinstance, request);
 
                         getResultThread getResultThread = new getResultThread();
                         getResultThread.start();
@@ -197,6 +196,7 @@ public class ZrpcClient implements InitializingBean {
     }
 
     public static String getRegistryAddress() {
+        log.debug("zookeeper 地址" + registryAddress);
         return registryAddress;
     }
 

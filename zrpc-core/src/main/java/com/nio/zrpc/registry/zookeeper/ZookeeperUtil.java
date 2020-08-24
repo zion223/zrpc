@@ -8,11 +8,11 @@ public class ZookeeperUtil {
 	private ZookeeperUtil( ) {}  
 
     //静态工厂方法   
-    public static ZkClient getInstance() {
+    public static ZkClient getInstance(String path) {
         if (zkClient == null) {
             //TODO ZK服务器地址  只能在这配置吗
-            zkClient = new ZkClient("192.168.1.54:2181");
-         }    
+            zkClient = new ZkClient(path);
+         }
         return zkClient;  
-    }  
+    }
 }

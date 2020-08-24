@@ -49,13 +49,15 @@ public class ZrpcClient implements InitializingBean {
     private static volatile ApplicationContext ac;
     private static volatile String registryAddress;
 
-    public ZrpcClient() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+    public ZrpcClient(String path) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         // 维护一个controller集合
         // 判断方法上是否有command注解
 
         //TODO 扫描类的路径
         packageName = ClassUtil.searchClass("com.nio.consumer");
-
+        //需要向注册中心订阅RPC服务,根据返回的服务列表，与具体的Server建立连接进行调用
+        initSpring(path);
+        log.debug("start client");
         filterAndInstance();
     }
 
@@ -89,12 +91,6 @@ public class ZrpcClient implements InitializingBean {
                 continue;
             }
         }
-    }
-
-    public void StartClient(String path) throws InterruptedException {
-        //需要向注册中心订阅RPC服务,根据返回的服务列表，与具体的Server建立连接进行调用
-        initSpring(path);
-        log.info("client start");
     }
 
     private static void invokeNettyRequest(String address, RpcRequest request) throws InterruptedException {

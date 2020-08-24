@@ -31,12 +31,7 @@ zrpc是一款简洁易用的分布式服务化治理框架(仅支持本地调用
  	http://www.lexueba.com/schema/zrpc.xsd">
 
 	
-	<!-- 
-		<dubbo:application name="dubbodemo-provider"/> 
-		<dubbo:registry id="dubbodemo" address="zookeeper://localhost:2181"/> 
-		<dubbo:protocol name="dubbo" port="28080"/> 
-		<dubbo:service registry="dubbodemo" timeout="3000" interface="com.chanshuyi.service.IUserService" ref="userService"/> 
-		实例化实现了接口的服务，维护一个map private String interfaceName;  -->
+
 
 	<!-- 暴露服务接口 -->
 	<bean id="helloImpl" class="com.nio.service.impl.HelloServiceImpl"/>
@@ -56,7 +51,7 @@ public class TestServer {
 	private static final Logger log = LoggerFactory.getLogger(TestServer.class);
 	public static void main(String[] args) {
 		 //创建服务器    地址和xml文件的路径
-		  Server.StartServer("com/nio/provider/zrpc-provider.xml");
+		  Server.StartServer("provider.xml");
 	}
 }
 
@@ -84,16 +79,6 @@ public class TestServer {
  	http://www.lexueba.com/schema/zrpc.xsd">
 
 
-<!-- 
-    <dubbo:application name="dubbodemo-consumer"/>
-	 
-    <dubbo:registry address="zookeeper://localhost:2181"/>
-    
-    <dubbo:protocol port="28080"/>
-    
-    <dubbo:reference id="userService" interface="com.chanshuyi.service.IUserService"/>
-
- -->
 	<zrpc:reference id="helloService" interfaceName="com.nio.service.HelloService" strategy="hash"/>
 	<!-- consul 地址127.0.0.1:8500从配置文件中获取 -->
 </beans>
@@ -107,7 +92,7 @@ public class testClient {
 	
 
 		Client client = new Client();
-		client.StartClient("com/nio/consumer/zrpc-consumer.xml");
+		client.StartClient("consumer.xml");
 		
 		//服务的ID和负载均衡策略
 		//HelloService service = (HelloService) Client.refer(HelloService.class);

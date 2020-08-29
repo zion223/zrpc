@@ -46,8 +46,6 @@ public class RpcHystrixCommand extends HystrixCommand<Object> {
     @Override
     protected Object getFallback() {
         // 本地方法调用
-        //{"name":"zhangrp","age":13}
-
         Object result = null;
         try {
             log.info(invoker.getDef().getFallbackClass());

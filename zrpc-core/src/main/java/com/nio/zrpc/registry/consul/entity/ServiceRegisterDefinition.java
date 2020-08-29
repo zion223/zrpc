@@ -10,14 +10,14 @@ public class ServiceRegisterDefinition {
     private List<String> tag;
     private String address;
     private List<Integer> port;
-    private String CheckIntervalTime = "5s";
+    private String checkIntervalTime = "5s";
 
     public String getCheckIntervalTime() {
-        return CheckIntervalTime;
+        return checkIntervalTime;
     }
 
     public void setCheckIntervalTime(String checkIntervalTime) {
-        CheckIntervalTime = checkIntervalTime;
+        this.checkIntervalTime = checkIntervalTime;
     }
 
     public String getId() {
@@ -40,7 +40,7 @@ public class ServiceRegisterDefinition {
         this.tag = tag;
         this.address = address;
         this.port = port;
-        this.CheckIntervalTime = time;
+        this.checkIntervalTime = time;
     }
 
     public ServiceRegisterDefinition(String id, String name, String tag, String address,
@@ -48,7 +48,7 @@ public class ServiceRegisterDefinition {
         super();
         this.id = id;
         this.name = name;
-        this.CheckIntervalTime = time;
+        this.checkIntervalTime = time;
         // TODO 暂时不支持tag
         List<String> arrayList = new ArrayList<>();
         arrayList.add("defaultTag");

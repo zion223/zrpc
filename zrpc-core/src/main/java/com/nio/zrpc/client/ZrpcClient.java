@@ -45,7 +45,7 @@ public class ZrpcClient implements InitializingBean {
 
     private static final Logger log = LoggerFactory.getLogger(ZrpcClient.class);
     private List<String> packageName = new ArrayList<String>();
-    private static HashMap<String, Object> fallbackMap = new HashMap<String, Object>();
+    private static final HashMap<String, Object> fallbackMap = new HashMap<String, Object>();
     private static volatile ApplicationContext ac;
     private static volatile String registryAddress;
 
@@ -112,12 +112,7 @@ public class ZrpcClient implements InitializingBean {
 
         ChannelFuture future = bootstrap.connect(host, port).sync();
         Channel channel = future.channel();
-        channel.writeAndFlush(request).sync().addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture future) {
-                log.info("消息发送完毕");
-            }
-        });
+        channel.writeAndFlush(request).sync().addListener((ChannelFutureListener) future1 -> log.info("消息发送完毕"));
 
         future.channel().closeFuture().sync();
     }

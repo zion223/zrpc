@@ -36,14 +36,14 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 public class ZrpcServer implements InitializingBean {
 	private static final Logger log = LoggerFactory.getLogger(ZrpcServer.class);
 
+	//注册中心地址
 	private static volatile String registryAddress;
-	/**
-	 * flag=true 为consul注册 flag=false 为zookeeper注册
-	 */
+	//当前注册方式
 	public static volatile RegistryType registryFlag;
-	public static ApplicationContext ac;
-
+	//注册中心端口
 	private static volatile int port;
+
+	public static ApplicationContext ac;
 
 
 	// consul的注册信息
@@ -73,7 +73,7 @@ public class ZrpcServer implements InitializingBean {
 					.childOption(ChannelOption.SO_KEEPALIVE, true);
 
 			ChannelFuture future = bootstrap.bind(host, port).sync();
-			log.info("Netty Server start on port : {} ", port);
+			log.info("Netty Server start on host : {}, port : {} ", host, port);
 
 			future.channel().closeFuture().sync();
 		} finally {
@@ -92,7 +92,7 @@ public class ZrpcServer implements InitializingBean {
 
 		ac = new ClassPathXmlApplicationContext(path);
 		RegistryDefinition registryDef = (RegistryDefinition) ac.getBean("registry");
-		log.info("注册中心为:" + registryDef.getName());
+		log.info("注册中心为: " + registryDef.getName());
 		registryAddress = registryDef.getAddress();
 		// 判断是consul还是zookeeper
 		if (registryDef.getName().equals(RegistryType.CONSUL.getKey())) {

@@ -98,9 +98,9 @@ public class testClient {
 		//HelloService service = (HelloService) Client.refer(HelloService.class);
 		HelloService service = (HelloService) Client.getBean("helloService");
 		
-		String sayHello = service.sayHello("zrp");
+		String sayHello = service.sayHello("test");
 		log.info(sayHello);
-//		User createUser = service.createUser("zhangrp",12);
+//		User createUser = service.createUser("test",12);
 //		log.info("返回的user:"+createUser);
 		
 	}
